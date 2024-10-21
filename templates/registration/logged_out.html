@@ -1,0 +1,16 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Logged-out
+{% endblock %}
+
+{% block header %}
+<h1>Страница выхода</h1>
+<h3>Вы успешно вышли из системы</h3>
+{% endblock %}
+
+{% block content %}
+    <p>
+        Вы можете <a href="{% url 'login' %}">войти</a> снова.
+    </p>
+{% endblock %}

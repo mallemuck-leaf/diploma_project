@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Comments
+{% endblock %}
+
+{% block header %}
+<h1>Комментарии</h1>
+<h3>Возможность обсудить задачу:</h3>
+<h3>{{ task.title }}</h3>
+{% endblock %}
+
+{% block content %}
+{% for comment in comments %}
+    <div>
+        <p>Отправитель: {{ comment.customer }}</p>
+        <p>Сообщение:</p>
+        <p>{{ comment.content }}</p>
+    </div>
+{% endfor %}
+<form method="post">
+    {{ form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Опубликовать"></p>
+</form>
+{% endblock %}

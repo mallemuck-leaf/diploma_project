@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" type="text/css">
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+	<div id="wrapper">
+		<header>
+			<div>
+				<a class="logo" href="#" title="Логотип сайта"></a>
+			</div>
+			<div id="headerinfo">
+				{% block header %}{% endblock %}
+			</div>
+			<div id="login" class="user">
+				{% if request.user.is_authenticated %}
+					Hello, {{request.user.first_name|default:request.user.username }},
+					<form action="{% url 'logout' %}" method="post">
+						{% csrf_token%}
+						<button type="submit">Выйти</button>
+					</form>
+				{% else %}
+					<form action="{% url 'login' %}" method="get">
+						<button type="submit">Войти</button>
+					</form>
+
+<!--				<a href="{% url 'login' %}">Войти</a>-->
+				{% endif %}
+			</div>
+			<nav>
+				{% if request.user.is_authenticated %}
+					<ul>
+						<li><a href="{% url 'dashboard' %}">Главная</a></li>
+<!--						<li><a href="#">Админка</a></li>-->
+					</ul>
+				{% endif %}
+			</nav>
+		</header>
+		{% if messages %}
+			<ul class="messages">
+				{% for message in messages %}
+					<li class="{{ message.tags }}">
+						{{ message|safe }}
+						<a href="#" class="close">x</a>
+					</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+		<main>
+			<div id="left"></div>
+			<div id="right"></div>
+			<div id="center">
+				{% block content %}
+				{% endblock %}
+			</div>
+			<div id="space"></div>
+        </main>
+	</div>
+<!--    <footer>-->
+<!--        {% include 'footer_info.html' %}-->
+<!--    </footer>-->
+</body>
+</html>

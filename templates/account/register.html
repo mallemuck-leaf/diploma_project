@@ -1,0 +1,18 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Create an account
+{% endblock %}
+
+{% block header %}
+<h1>Создание учетных данных</h1>
+<h3>Для создания учетной записи заполните форму.</h3>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    {{ user_form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Создать"></p>
+</form>
+{% endblock %}

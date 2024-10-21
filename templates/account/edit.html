@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Create an account
+{% endblock %}
+
+{% block header %}
+<h1>Изменение учетных данных</h1>
+{% endblock %}
+
+{% block content %}
+<p>Вы можете изменить учетные данные, заполнив форму ниже.</p>
+<form method="post" enctype="multipart/form-data">
+    {{ user_form.as_p }}
+    {{ profile_form.as_p }}
+    {% csrf_token %}
+    <p><input type="submit" value="Сохранить изменения"></p>
+</form>
+{% endblock %}

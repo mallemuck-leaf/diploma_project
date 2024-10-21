@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Task list
+{% endblock %}
+
+{% block header %}
+<h1>Список задач</h1>
+<h3>Все задачи.</h3>
+{% endblock %}
+
+{% block content %}
+<p><a href="{% url 'add_task' %}">Добавить</a> задачу.</p>
+{% for task in tasks %}
+<div>
+    <div id="tasklist">
+        <h3><a href="detail/{{ task.id }}">{{ task.title }}</a></h3>
+        <p>Исполнитель:</p>
+        <p>{{ task.executor }}</p>
+        <p>Владелец:</p>
+        <p>{{ task.customer }}</p>
+        <p>Статус:</p>
+        <p>{{ task.get_status_display }}</p>
+        <p>Дата создания:</p>
+        <p>{{ task.date_created }}</p>
+        <p>Срок выполнения:</p>
+        <p>{{ task.date_to_complete }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
