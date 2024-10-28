@@ -1,0 +1,27 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Task list
+{% endblock %}
+
+{% block header %}
+<h1>Важности</h1>
+<h3>Удаление критерия.</h3>
+{% endblock %}
+
+{% block content %}
+<p>Вы действительно желаете удалить критерий?</p>
+<div>
+    <div>
+        <h3>{{ priority.name }}</h3>
+    </div>
+</div>
+<div id="form">
+    <form method="post">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Да"><a href="{% url 'priority_list' %}">Нет</a></p>
+    </form>
+
+</div>
+{% endblock %}

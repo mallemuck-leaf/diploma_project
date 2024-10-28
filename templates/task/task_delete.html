@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Category
+{% endblock %}
+
+{% block header %}
+<h1>Категории</h1>
+<h3>Удаление категории.</h3>
+{% endblock %}
+
+{% block content %}
+<p>Вы действительно желаете удалить категорию?</p>
+<div>
+    <div>
+        <h3>{{ category.name }}</h3>
+        <p>{{ category.description }}</p>
+        {% if request.user.is_staff %}
+        <p>Автор: {{ category.created_by.user.username }}</p>
+        {% endif %}
+    </div>
+</div>
+<div id="form">
+    <form method="post">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Да"><a href="{% url 'category_list' %}">Нет</a></p>
+    </form>
+
+</div>
+{% endblock %}

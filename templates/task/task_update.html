@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Task detail
+{% endblock %}
+
+{% block header %}
+<h1>Задача</h1>
+<h3>Подробная информация.</h3>
+{% endblock %}
+
+{% block content %}
+<div>
+    {% if request.user.is_staff %}
+    <p>Автор: {{ task.created_by.user.username }}</p>
+    {% endif %}
+    <div>
+        <p>Изменить задачу:</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Сохранить">
+        </form>
+    </div>
+</div>
+{% endblock %}
