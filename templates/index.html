@@ -26,15 +26,13 @@
 					<form action="{% url 'login' %}" method="get">
 						<button type="submit">Войти</button>
 					</form>
-
-<!--				<a href="{% url 'login' %}">Войти</a>-->
 				{% endif %}
 			</div>
 			<nav>
 				{% if request.user.is_authenticated %}
 					<ul>
 						<li><a href="{% url 'dashboard' %}">Главная</a></li>
-<!--						<li><a href="#">Админка</a></li>-->
+						<li><a href="{% url 'task_list' %}">Задачи</a></li>
 					</ul>
 				{% endif %}
 			</nav>

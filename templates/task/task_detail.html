@@ -10,30 +10,25 @@ Task detail
 {% endblock %}
 
 {% block content %}
-{% for task in tasks %}
 <div>
     <h3>{{ task.title }}</h3>
-    <p>Описание:</p>
-    <p>{{ task.description }}</p>
-    <p>Исполнитель:</p>
-    <p>{{ task.executor }}</p>
-    <p>Владелец:</p>
-    <p>{{ task.customer }}</p>
+    {% if request.user.is_staff %}
+    <p>Автор: {{ task.created_by.user.username }}</p>
+    {% endif %}
+    <p>Описание: {{ task.description }}</p>
+    <p>Категория: {{ task.category }}</p>
+    <p>Важность: {{ task.priority }}</p>
     <p>Статус:</p>
-    <p>{{ task.get_status_display }}</p>
     <div>
-        <p>Изменить статус:</p>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <input type="submit" value="Изменить">
+            <input type="submit" value="Сохранить">
         </form>
     </div>
-    <p>Дата создания:</p>
-    <p>{{ task.date_created }}</p>
-    <p>Срок выполнения:</p>
-    <p>{{ task.date_to_complete }}</p>
-    <p><a href="{% url 'task_comment' task.pk %}">Комментарии</a> к задаче</p>
+    <p>Срок выполнения: {{ task.completed }}</p>
+    <p>Дата создания: {{ task.created_at }}</p>
+    <p>Последнее обновление: {{ task.updated_at }}</p>
+    <p><a href="/tasks/update/{{ task.id }}">Изменить</a></p>
 </div>
-{% endfor %}
 {% endblock %}

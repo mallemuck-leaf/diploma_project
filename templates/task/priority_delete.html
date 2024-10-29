@@ -1,30 +1,27 @@
 {% extends 'index.html' %}
 
 {% block title %}
-Task list
+Priority
 {% endblock %}
 
 {% block header %}
 <h1>Важности</h1>
-<h3>Ваши критерии важности задач.</h3>
+<h3>Удаление критерия.</h3>
 {% endblock %}
 
 {% block content %}
-<p><a href="#">Добавить</a> критерий важности.</p>
-<p><a href="{% url 'task_list' %}">Вернуться</a> к списку задач.</p>
+<p>Вы действительно желаете удалить критерий?</p>
 <div>
     <div>
         <h3>{{ priority.name }}</h3>
-        <p>Автор: {{ priority.created_by.user.username }}</p>
-        <p>Дата создания: {{ priority.created_at }}</p>
-        <p>Последнее изменение: {{ priority.updated_at }}</p>
     </div>
 </div>
 <div id="form">
     <form method="post">
         {{ form.as_p }}
         {% csrf_token %}
-        <p><input type="submit" value="Изменить"></p>
+        <p><input type="submit" value="Да"><a href="{% url 'priority_list' %}">Нет</a></p>
     </form>
+
 </div>
 {% endblock %}

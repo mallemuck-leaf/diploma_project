@@ -1,39 +1,41 @@
 {% extends 'index.html' %}
 
 {% block title %}
-Task list
+Categories
 {% endblock %}
 
 {% block header %}
-<h1>Список задач</h1>
-<h3>Все задачи.</h3>
+<h1>Категории задач</h1>
+<h3>Все ваши категории.</h3>
 {% endblock %}
 
 {% block content %}
-<p><a href="#">Добавить</a> задачу.</p>
-{% for task in tasks %}
+<p><a href="{% url 'task_list' %}">Вернуться</a> к списку задач.</p>
+{% for category in categories %}
 <div>
-    <div id="tasklist">
-        <h3><a href="#">{{ task.title }}</a></h3>
-        <p>Автор:</p>
-        <p>{{ task.created_by }}</p>
+    <div>
+        <h3>{{ category.name }}</h3>
+        {% if request.user.is_staff %}
+        <p>Автор: {{ category.created_by.user.username }}</p>
+        {% endif %}
         <p>Описание:</p>
-        <p>{{ task.description }}</p>
-        <p>Категория:</p>
-        <p>{{ task.get_category_display }}</p>
-        <p>Важность:</p>
-        <p>{{ task.get_priority_display }}</p>
-        <p>Статус:</p>
-        <p>{{ task.get_status_display }}</p>
+        <p>{{ category.description }}</p>
         <p>Дата создания:</p>
-        <p>{{ task.created_at }}</p>
+        <p>{{ category.created_at }}</p>
         <p>Последнее изменение:</p>
-        <p>{{ task.updated_at }}</p>
-        <p>Срок выполнения:</p>
-        <p>{{ task.completed }}</p>
-        <p>Дата выполнения:</p>
-        <p>{{ task.completed_at }}</p>
+        <p>{{ category.updated_at }}</p>
+        <p><a href="category/{{ category.id }}">Изменить</a></p>
+        <p><a href="delete/{{ category.id }}">Удалить</a></p>
     </div>
+
 </div>
+
 {% endfor %}
+<div id="form">
+        <form method="post">
+            {{ form.as_p }}
+            {% csrf_token %}
+            <p><input type="submit" value="Добавить"></p>
+        </form>
+    </div>
 {% endblock %}

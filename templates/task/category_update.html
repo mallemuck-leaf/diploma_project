@@ -1,23 +1,26 @@
 {% extends 'index.html' %}
 
 {% block title %}
-Task list
+Category
 {% endblock %}
 
 {% block header %}
-<h1>Важности</h1>
-<h3>Ваши критерии важности задач.</h3>
+<h1>Категории</h1>
+<h3>Изменение категории.</h3>
 {% endblock %}
 
 {% block content %}
-<p><a href="#">Добавить</a> критерий важности.</p>
-<p><a href="{% url 'task_list' %}">Вернуться</a> к списку задач.</p>
+<p><a href="{% url 'category_list' %}">Вернуться</a> к списку категорий.</p>
 <div>
     <div>
-        <h3>{{ priority.name }}</h3>
-        <p>Автор: {{ priority.created_by.user.username }}</p>
-        <p>Дата создания: {{ priority.created_at }}</p>
-        <p>Последнее изменение: {{ priority.updated_at }}</p>
+        <h3>{{ category.name }}</h3>
+        <p>Описание:</p>
+        <p>{{ category.description }}</p>
+        {% if request.user.is_staff %}
+        <p>Автор: {{ category.created_by.user.username }}</p>
+        {% endif %}
+        <p>Дата создания: {{ category.created_at }}</p>
+        <p>Последнее изменение: {{ category.updated_at }}</p>
     </div>
 </div>
 <div id="form">

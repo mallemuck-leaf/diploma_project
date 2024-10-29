@@ -1,22 +1,22 @@
 {% extends 'index.html' %}
 
 {% block title %}
-Category
+Task
 {% endblock %}
 
 {% block header %}
-<h1>Категории</h1>
-<h3>Удаление категории.</h3>
+<h1>Задачи</h1>
+<h3>Удаление задачи.</h3>
 {% endblock %}
 
 {% block content %}
-<p>Вы действительно желаете удалить категорию?</p>
+<p>Вы действительно желаете удалить задачу?</p>
 <div>
     <div>
-        <h3>{{ category.name }}</h3>
-        <p>{{ category.description }}</p>
+        <h3>{{ task.title }}</h3>
+        <p>Описание: {{ task.description }}</p>
         {% if request.user.is_staff %}
-        <p>Автор: {{ category.created_by.user.username }}</p>
+        <p>Автор: {{ task.created_by.user.username }}</p>
         {% endif %}
     </div>
 </div>
@@ -24,7 +24,7 @@ Category
     <form method="post">
         {{ form.as_p }}
         {% csrf_token %}
-        <p><input type="submit" value="Да"><a href="{% url 'category_list' %}">Нет</a></p>
+        <p><input type="submit" value="Да"><a href="{% url 'task_list' %}">Нет</a></p>
     </form>
 
 </div>

@@ -10,21 +10,38 @@ Task list
 {% endblock %}
 
 {% block content %}
-<p><a href="{% url 'add_task' %}">Добавить</a> задачу.</p>
+<p><a href="{% url 'priority_list' %}">Приоритеты.</a></p>
+<p><a href="{% url 'category_list' %}">Категории.</a></p>
+<p><a href="{% url 'task_create' %}">Добавить задачу.</a></p>
+<div>
+    <form action="" method="get">
+        {{ filter_form.as_p }}
+        <input type="submit" value="Применить фильтр">
+        <p><a href="{% url 'task_list' %}">Сбросить фильтр</a></p>
+    </form>
+</div>
+<div>
+    <form action="" method="get">
+        {{ sorted_form.as_p }}
+        <input type="submit" value="Применить сортировки">
+        <p><a href="{% url 'task_list' %}">Сбросить фильтр</a></p>
+    </form>
+</div>
 {% for task in tasks %}
 <div>
     <div id="tasklist">
-        <h3><a href="detail/{{ task.id }}">{{ task.title }}</a></h3>
-        <p>Исполнитель:</p>
-        <p>{{ task.executor }}</p>
-        <p>Владелец:</p>
-        <p>{{ task.customer }}</p>
-        <p>Статус:</p>
-        <p>{{ task.get_status_display }}</p>
-        <p>Дата создания:</p>
-        <p>{{ task.date_created }}</p>
-        <p>Срок выполнения:</p>
-        <p>{{ task.date_to_complete }}</p>
+        <h3><a href="{{ task.id }}">{{ task.title }}</a></h3>
+        {% if request.user.is_staff %}
+        <p>Автор: {{ task.created_by.user.username }}</p>
+        {% endif %}
+        <p>Категория: {{ task.category.name }}</p>
+        <p>Важность: {{ task.priority.name }}</p>
+        <p>Статус: {{ task.get_status_display }}</p>
+        <p>Срок выполнения: {{ task.completed }}</p>
+        <p><a href="delete/{{ task.id }}">Удалить</a></p>
+    </div>
+    <div>
+
     </div>
 </div>
 {% endfor %}

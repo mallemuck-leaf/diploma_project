@@ -6,7 +6,7 @@ Task detail
 
 {% block header %}
 <h1>Задача</h1>
-<h3>Подробная информация.</h3>
+<h3>Изменить задачу.</h3>
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,6 @@ Task detail
     <p>Автор: {{ task.created_by.user.username }}</p>
     {% endif %}
     <div>
-        <p>Изменить задачу:</p>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}

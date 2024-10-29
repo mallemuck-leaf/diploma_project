@@ -11,9 +11,9 @@ New task
 
 {% block content %}
 <form method="post">
-    {{ task_edit_form.as_p }}
+    {{ form.as_p }}
     {% csrf_token %}
     <p><input type="submit" value="Добавить"></p>
 </form>
-<a href="{% url 'add_task' %}">Обновить</a>
+<a href="{% url 'task_list' %}">Вернуться</a>
 {% endblock %}
