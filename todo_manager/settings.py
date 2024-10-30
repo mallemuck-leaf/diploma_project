@@ -80,7 +80,8 @@ WSGI_APPLICATION = 'todo_manager.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        # 'task_api.permissions.IsAdminOrUserIDOnly'
+        'rest_framework.permissions.AllowAny',
     ]
 }
 

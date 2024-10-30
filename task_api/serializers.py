@@ -23,8 +23,24 @@ class PersonListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class PersonAdminListSerializer(serializers.ModelSerializer):
+    user = UserDetailForAdminSerializer()
+
+    class Meta:
+        model = Person
+        fields = '__all__'
+
+
 class PersonDetailSerializer(serializers.ModelSerializer):
     user = UserDetailSerializer()
+
+    class Meta:
+        model = Person
+        fields = ['user']
+
+
+class PersonAdminDetailSerializer(serializers.ModelSerializer):
+    user = UserDetailForAdminSerializer()
 
     class Meta:
         model = Person
