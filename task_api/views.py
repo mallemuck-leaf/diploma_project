@@ -13,6 +13,7 @@ from .serializers import (
 from .mixins import (
     SerializerPersonMixin, SerializerPriorityMixin, SerializerCategoryMixin, SerializerTaskMixin,
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin,
+    AbstractDestroyMixin,
 )
 
 
@@ -21,19 +22,22 @@ class PersonViewSet(SerializerPersonMixin, PersonQuerysetClassMixin, ModelViewSe
     permission_classes = [IsAdminOrUserIDOnly]
 
 
-class PriorityViewSet(SerializerPriorityMixin, AbstractQuerysetClassMixin, ModelViewSet):
+class PriorityViewSet(SerializerPriorityMixin, AbstractQuerysetClassMixin, AbstractDestroyMixin, ModelViewSet):
     # queryset = Priority.objects.all()
     permission_classes = [IsAuthenticated]
     obj_model = Priority
+    redirect_url = '/api/v1/priorities/'
 
 
-class CategoryViewSet(SerializerCategoryMixin, AbstractQuerysetClassMixin, ModelViewSet):
+class CategoryViewSet(SerializerCategoryMixin, AbstractQuerysetClassMixin, AbstractDestroyMixin, ModelViewSet):
     # queryset = Category.objects.all()
     permission_classes = [IsAuthenticated]
     obj_model = Category
+    redirect_url = '/api/v1/categories/'
 
 
-class TaskViewSet(SerializerTaskMixin, AbstractQuerysetClassMixin, ModelViewSet):
+class TaskViewSet(SerializerTaskMixin, AbstractQuerysetClassMixin, AbstractDestroyMixin, ModelViewSet):
     # queryset = Category.objects.all()
     permission_classes = [IsAuthenticated]
     obj_model = Task
+    redirect_url = '/api/v1/tasks/'

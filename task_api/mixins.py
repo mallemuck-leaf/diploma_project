@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.shortcuts import redirect
 from task.models import Person
 from .serializers import (
     PersonDetailSerializer, PersonListSerializer, PersonAdminListSerializer, PersonAdminDetailSerializer,
@@ -38,6 +40,20 @@ class AbstractQuerysetClassMixin:
             return self.obj_model.objects.filter(created_by=person_user,
                                                  deleted_at=None,
                                                  deleted=None)
+
+
+class AbstractDestroyMixin:
+    obj_model = None
+    redirect_url = None
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        deleteting_obj = self.obj_model.objects.filter(id=instance.id)
+        if self.request.user.is_staff:
+            deleteting_obj.update(deleted=datetime.now())
+        else:
+            deleteting_obj.update(deleted_at=datetime.now())
+        return redirect(f'{self.redirect_url}')
 
 
 class PersonQuerysetClassMixin:
