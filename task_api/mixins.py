@@ -1,28 +1,109 @@
+from task.models import Person
 from .serializers import (
     PersonDetailSerializer, PersonListSerializer, PersonAdminListSerializer, PersonAdminDetailSerializer,
+    PrioritySerializer, PriorityAdminSerializer,
+    CategorySerializer, CategoryAdminSerializer,
+    TaskSerializer,
 )
 
+ACTIONS = ('create', 'retrieve', 'list')
 
-class SerializerPersonMixin:
+
+class AbstractMixin:
+    serializer_classes = None
+    actions = None
+
     def get_serializer_class(self):
         if self.request.user.is_staff:
-            if self.action == 'create':
-                return PersonAdminDetailSerializer
-            elif self.action == 'retrieve':
-                return PersonAdminDetailSerializer
-            elif self.action == 'list':
-                return PersonAdminListSerializer
-            return PersonAdminDetailSerializer
+            if self.action in self.actions:
+                return self.serializer_classes['admin'][self.action]
+            else:
+                return self.serializer_classes['admin']['else']
         else:
-            if self.action == 'create':
-                return PersonDetailSerializer
-            elif self.action == 'retrieve':
-                return PersonDetailSerializer
-            elif self.action == 'list':
-                return PersonListSerializer
-        # return super().get_serializer_class()
-            return PersonDetailSerializer
+            if self.action in self.actions:
+                return self.serializer_classes['user'][self.action]
+            else:
+                return self.serializer_classes['user']['else']
 
-class SerializerTaskMixin:
-    def get_serializer_class(self):
-        pass
+
+class AbstractQuerysetClassMixin:
+    obj_model = None
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return self.obj_model.objects.filter(deleted_at=None,
+                                                 deleted=None)
+        else:
+            person_user = Person.objects.get(user=self.request.user)
+            return self.obj_model.objects.filter(created_by=person_user,
+                                                 deleted_at=None,
+                                                 deleted=None)
+
+
+class PersonQuerysetClassMixin:
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Person.objects.all()
+        else:
+            return Person.objects.filter(user=self.request.user)
+
+
+class SerializerPersonMixin(AbstractMixin):
+    serializer_classes = {
+        'admin': {
+            'create': PersonAdminDetailSerializer,
+            'retrieve': PersonAdminDetailSerializer,
+            'list': PersonAdminListSerializer,
+            'else': PersonAdminDetailSerializer
+        },
+        'user': {
+            'create': PersonDetailSerializer,
+            'retrieve': PersonDetailSerializer,
+            'list': PersonListSerializer,
+            'else': PersonDetailSerializer,
+        }
+    }
+    actions = ACTIONS
+
+
+class SerializerPriorityMixin(AbstractMixin):
+    serializer_classes = {
+        'admin': {
+            'else': PriorityAdminSerializer
+        },
+        'user': {
+            'else': PrioritySerializer
+        }
+    }
+    actions = ()
+
+
+class SerializerCategoryMixin(AbstractMixin):
+    serializer_classes = {
+        'admin': {
+            'else': CategoryAdminSerializer
+        },
+        'user': {
+            'else': CategorySerializer
+        }
+    }
+    actions = ()
+
+
+class SerializerTaskMixin(AbstractMixin):
+    serializer_classes = {
+        'admin': {
+            'create': PersonAdminDetailSerializer,
+            'retrieve': PersonAdminDetailSerializer,
+            'list': PersonAdminListSerializer,
+            'else': PersonAdminDetailSerializer
+        },
+        'user': {
+            'create': PersonDetailSerializer,
+            'retrieve': PersonDetailSerializer,
+            'list': PersonListSerializer,
+            'else': TaskSerializer
+        }
+    }
+    actions = ()

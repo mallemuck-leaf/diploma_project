@@ -1,11 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
-from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm
+from .forms import LoginForm, UserRegistrationForm, UserEditForm, ProfileEditForm, UserDetailForm
 from .models import Profile
 
 
@@ -73,3 +74,39 @@ def register(request):
     else:
         user_form = UserRegistrationForm()
     return render(request, 'account/register.html', {'user_form': user_form})
+
+
+@login_required
+def account_list(request):
+    if request.user.is_staff:
+        profiles = Profile.objects.all()
+    else:
+        profiles = ()
+    content = {
+        'profiles': profiles,
+    }
+    return render(request, 'account/profile_list.html', content)
+
+
+@login_required
+def account_detail(request, pk):
+    if request.method == 'POST':
+        profile_obj = Profile.objects.get(id=pk)
+        form = UserDetailForm(data=request.POST)
+        if form.is_valid():
+            new_info = form.save(commit=False)
+            User.objects.filter(id=profile_obj.user.id).update(is_staff=new_info.is_staff,
+                                                               is_active=new_info.is_active,
+                                                               is_superuser=new_info.is_superuser,)
+            return redirect(f'/account/profile_list/{pk}')
+    if request.user.is_staff:
+        profiles = Profile.objects.get(id=pk)
+        form = UserDetailForm(instance=profiles)
+    else:
+        profiles = ()
+        form = UserDetailForm()
+    content = {
+        'profiles': profiles,
+        'form': form,
+    }
+    return render(request, 'account/profile_detail.html', content)

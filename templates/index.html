@@ -33,6 +33,10 @@
 					<ul>
 						<li><a href="{% url 'dashboard' %}">Главная</a></li>
 						<li><a href="{% url 'task_list' %}">Задачи</a></li>
+						{% if request.user.is_staff %}
+						<li><a href="{% url 'profile_list' %}">Пользователи</a></li>
+						{% endif %}
+						<li><a href="/api/v1/">API</a></li>
 					</ul>
 				{% endif %}
 			</nav>

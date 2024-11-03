@@ -9,6 +9,8 @@ class IsAdminOrUserIDOnly(BasePermission):
     #     return obj.user == request.user
 
     def has_object_permission(self, request, view, obj):
+        print(request.user.username)
         if request.user.is_staff:
             return True
+        # return obj.user == request.user
         return obj.user == request.user

@@ -1,0 +1,28 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Profile detail
+{% endblock %}
+
+{% block header %}
+<h1>Информация о пользователе</h1>
+<h3></h3>
+{% endblock %}
+
+{% block content %}
+<div>
+    {% if request.user.is_staff %}
+    <p>Пользователь: {{ profiles.user.username }}</p>
+    <p>First_name: {{ profiles.user.first_name }}</p>
+    <p>Last_name: {{ profiles.user.last_name }}</p>
+    <p>email: {{ profiles.user.email }}</p>
+    <div>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Сохранить">
+        </form>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

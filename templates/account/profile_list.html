@@ -1,0 +1,31 @@
+{% extends 'index.html' %}
+
+{% block title %}
+Profiles
+{% endblock %}
+
+{% block header %}
+<h1>Список пользователей</h1>
+<h3>Все пользователи.</h3>
+{% endblock %}
+
+{% block content %}
+{% if request.user.is_staff %}
+{% for profile in profiles %}
+<div>
+    <div id="tasklist">
+        <h3><a href="{{ profile.id }}">{{ profile.user.username }}</a></h3>
+        <p>First name: {{ profile.user.first_name }}</p>
+        <p>Last name: {{ profile.user.last_name }}</p>
+        <p>email: {{ profile.user.email }}</p>
+        <p>статус: {{ profile.user.is_active }}</p>
+        <p>админ: {{ profile.user.is_staff }}</p>
+        <p><a href="#">Удалить</a></p>
+    </div>
+    <div>
+
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}
