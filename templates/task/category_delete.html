@@ -6,11 +6,19 @@ Category
 
 {% block header %}
 <h1>Категории</h1>
-<h3>Удаление категории.</h3>
+    {% if category.deleted is None and category.deleted_at is None %}
+        <h3>Удаление категории.</h3>
+    {% else %}
+        <h3>Восстановление категории</h3>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-<p>Вы действительно желаете удалить категорию?</p>
+    {% if category.deleted is None and category.deleted_at is None %}
+        <p>Вы действительно желаете удалить категорию?</p>
+    {% else %}
+        <p>Вы действительно желаете восстановить категорию?</p>
+    {% endif %}
 <div>
     <div>
         <h3>{{ category.name }}</h3>

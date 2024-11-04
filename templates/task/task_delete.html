@@ -6,11 +6,19 @@ Task
 
 {% block header %}
 <h1>Задачи</h1>
+{% if task.deleted is not None or task.deleted_at is not None %}
+<h3>Восстановление задачи.</h3>
+{% else %}
 <h3>Удаление задачи.</h3>
+{% endif %}
 {% endblock %}
 
 {% block content %}
+{% if task.deleted is not None or task.deleted_at is not None %}
+<p>Вы действительно желаете восстановить задачу?</p>
+{% else %}
 <p>Вы действительно желаете удалить задачу?</p>
+{% endif %}
 <div>
     <div>
         <h3>{{ task.title }}</h3>

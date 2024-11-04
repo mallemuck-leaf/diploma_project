@@ -1,5 +1,6 @@
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework.response import Response
 from task.models import Person
 from .serializers import (
     PersonDetailSerializer, PersonListSerializer, PersonAdminListSerializer, PersonAdminDetailSerializer,
@@ -54,6 +55,17 @@ class AbstractDestroyMixin:
         else:
             deleteting_obj.update(deleted_at=datetime.now())
         return redirect(f'{self.redirect_url}')
+
+
+# class AbstractCreateMixin:
+#
+#     def create(self, request, *args, **kwargs):
+#         serializer = self.get_serializer(data=request.data)
+#         serializer['created_at'] = datetime.now()
+#         serializer.is_valid(raise_exception=True)
+#         self.perform_create(serializer)
+#         headers = self.get_success_headers(serializer.data)
+#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class PersonQuerysetClassMixin:

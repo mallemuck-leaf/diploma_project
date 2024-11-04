@@ -1,6 +1,21 @@
+from datetime import datetime
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from task.models import Person, Priority, Category, Task, Status
+
+
+class MyDefCreateSerializer:
+    user = None
+
+    def create(self, validated_data):
+        print(validated_data)
+        validated_data.update(
+            {
+                'created_at': datetime.now(),
+                'created_by': Person.objects.get(user=validated_data.user)
+            }
+        )
+        return super().create(validated_data)
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -46,7 +61,7 @@ class PersonAdminDetailSerializer(serializers.ModelSerializer):
         fields = ['user']
 
 
-class PrioritySerializer(serializers.ModelSerializer):
+class PrioritySerializer(MyDefCreateSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Priority

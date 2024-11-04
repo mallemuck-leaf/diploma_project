@@ -32,12 +32,14 @@ def task_list(request):
             'tasks': tasks.order_by(*sort_items),
             'filter_form': filter_form,
             'sorted_form': sorted_form,
+            'status': 'actually',
         }
     else:
         content = {
             'tasks': tasks.filter(created_by=user).order_by(*sort_items),
             'filter_form': filter_form,
             'sorted_form': sorted_form,
+            'status': 'actually',
         }
     return render(request, 'task/task_list.html', content)
 
@@ -250,3 +252,127 @@ def category_delete(request, pk):
         'form': form,
     }
     return render(request, 'task/category_delete.html', content)
+
+
+@login_required
+def deleted_task_list(request):
+    user = Person.objects.get(user=request.user)
+    if request.user.is_staff:
+        tasks = Task.objects.all().exclude(deleted_at=None, deleted=None)
+    else:
+        tasks = Task.objects.filter(deleted=None).exclude(deleted_at=None)
+    filter_form = TaskStatusFilterForm(data=request.GET)
+    sorted_form = TaskSortingForm(data=request.GET)
+    if filter_form.is_valid():
+        if filter_form.cleaned_data['status']:
+            tasks = tasks.filter(status=filter_form.cleaned_data['status'])
+    if sorted_form.is_valid():
+        if sorted_form.cleaned_data['filter_choice']:
+            sort_items = sorted_form.cleaned_data['filter_choice']
+        # else:
+        #     sort_items = ['created_by', ]
+    else:
+        sort_items = ['created_by',]
+    if request.user.is_staff:
+        content = {
+            'tasks': tasks.order_by(*sort_items),
+            'filter_form': filter_form,
+            'sorted_form': sorted_form,
+            'status': 'deleted',
+        }
+    else:
+        content = {
+            'tasks': tasks.filter(created_by=user).order_by(*sort_items),
+            'filter_form': filter_form,
+            'sorted_form': sorted_form,
+            'status': 'deleted',
+        }
+    return render(request, 'task/task_list.html', content)
+
+
+@login_required
+def deleted_task_recovery(request, pk):
+    if request.method == 'POST':
+        form = TaskDeleteForm(data=request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            if request.user.is_staff:
+                Task.objects.filter(id=pk).update(deleted=None, deleted_at=None)
+            else:
+                Task.objects.filter(id=pk).update(deleted_at=None)
+            responce = redirect('/tasks/deleted/')
+            return responce
+    form = TaskDeleteForm()
+    content = {
+        'task': Task.objects.get(id=pk),
+        'form': form,
+    }
+    return render(request, 'task/task_delete.html', content)
+
+
+@login_required
+def deleted_priority_list(request):
+    user = Person.objects.get(user=request.user)
+    if request.user.is_staff:
+        content = {
+            'priorities': Priority.objects.exclude(deleted=None, deleted_at=None).order_by('created_by'),
+        }
+    else:
+        content = {
+            'priorities': Priority.objects.filter(created_by=user, deleted=None).exclude(deleted_at=None),
+        }
+    return render(request, 'task/priority_list.html', content)
+
+
+@login_required
+def deleted_priority_recovery(request, pk):
+    if request.method == 'POST':
+        form = PriorityDeleteForm(data=request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            if request.user.is_staff:
+                Priority.objects.filter(id=pk).update(deleted=None, deleted_at=None)
+            else:
+                Priority.objects.filter(id=pk).update(deleted_at=None)
+            responce = redirect('/tasks/priorities/')
+            return responce
+    form = PriorityDeleteForm()
+    content = {
+        'priority': Priority.objects.get(id=pk),
+        'form': form,
+    }
+    return render(request, 'task/priority_delete.html', content)
+
+
+@login_required
+def deleted_category_list(request):
+    user = Person.objects.get(user=request.user)
+    if request.user.is_staff:
+        content = {
+            'categories': Category.objects.exclude(deleted_at=None, deleted=None).order_by('created_by'),
+        }
+    else:
+        content = {
+            'categories': Category.objects.filter(created_by=user, deleted=None).exclude(deleted_at=None),
+        }
+    return render(request, 'task/category_list.html', content)
+
+
+@login_required
+def deleted_category_recovery(request, pk):
+    if request.method == 'POST':
+        form = CategoryDeleteForm(data=request.POST)
+        if form.is_valid():
+            form.save(commit=False)
+            if request.user.is_staff:
+                Category.objects.filter(id=pk).update(deleted=None, deleted_at=None)
+            else:
+                Category.objects.filter(id=pk).update(deleted_at=None)
+            return redirect('/tasks/categories/')
+    form = CategoryDeleteForm()
+    content = {
+        'category': Category.objects.get(id=pk),
+        'form': form,
+    }
+    return render(request, 'task/category_delete.html', content)
+

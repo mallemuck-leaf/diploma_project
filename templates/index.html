@@ -33,6 +33,7 @@
 					<ul>
 						<li><a href="{% url 'dashboard' %}">Главная</a></li>
 						<li><a href="{% url 'task_list' %}">Задачи</a></li>
+						<li><a href="{% url 'deleted_task_list' %}">Архив</a></li>
 						{% if request.user.is_staff %}
 						<li><a href="{% url 'profile_list' %}">Пользователи</a></li>
 						{% endif %}

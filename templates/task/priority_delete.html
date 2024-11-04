@@ -6,11 +6,19 @@ Priority
 
 {% block header %}
 <h1>Важности</h1>
-<h3>Удаление критерия.</h3>
+    {% if priority.deleted is None and priority.deleted_at is None %}
+        <h3>Удаление критерия.</h3>
+    {% else %}
+        <h3>Восстановление критерия</h3>
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-<p>Вы действительно желаете удалить критерий?</p>
+    {% if priority.deleted is None and priority.deleted_at is None %}
+        <p>Вы действительно желаете удалить критерий?</p>
+    {% else %}
+        <p>Вы действительно желаете восстановить критерий?</p>
+    {% endif %}
 <div>
     <div>
         <h3>{{ priority.name }}</h3>

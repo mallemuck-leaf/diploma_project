@@ -6,27 +6,34 @@ Priorities
 
 {% block header %}
 <h1>Важности</h1>
-<h3>Ваши критерии важности задач.</h3>
 {% endblock %}
 
 {% block content %}
-<p><a href="{% url 'task_list' %}">Вернуться</a> к списку задач.</p>
 <div>
 {% for priority in priorities %}
 <div>
     <div id>
         <h3>{{ priority.name }}</h3>
         {% if request.user.is_staff %}
-        <p>Автор: {{ priority.created_by.user.username }}</p>
+            <p>Автор: {{ priority.created_by.user.username }}</p>
         {% endif %}
-        <p>Дата создания: {{ priority.created_at }}</p>
-        <p>Последнее изменение: {{ priority.updated_at }}</p>
-        <p><a href="priority/{{ priority.id }}">Изменить</a></p>
-        <p><a href="delete/{{ priority.id }}">Удалить</a></p>
+            <p>Дата создания: {{ priority.created_at }}</p>
+            <p>Последнее изменение: {{ priority.updated_at }}</p>
+        {% if priority.deleted is None and priority.deleted_at is None %}
+            <p><a href="priority/{{ priority.id }}">Изменить</a></p>
+            <p><a href="delete/{{ priority.id }}">Удалить</a></p>
+        {% else %}
+            <p>Дата удаления: {{ priority.deleted_at }}</p>
+            {% if request.user.is_staff %}
+                <p>Дата удаления администратором: {{ category.deleted }}</p>
+            {% endif %}
+            <p><a href="{{ priority.id }}">Восстановить</a></p>
+        {% endif %}
     </div>
 </div>
 {% endfor %}
 </div>
+{% if priority.deleted is None and priority.deleted_at is None %}
 <div id="form">
     <form method="post">
         {{ form.as_p }}
@@ -34,4 +41,5 @@ Priorities
         <p><input type="submit" value="Добавить"></p>
     </form>
 </div>
+{% endif %}
 {% endblock %}

@@ -5,14 +5,19 @@ Task list
 {% endblock %}
 
 {% block header %}
-<h1>Список задач</h1>
-<h3>Все задачи.</h3>
+        <h1>Список задач</h1>
 {% endblock %}
 
 {% block content %}
-<p><a href="{% url 'priority_list' %}">Приоритеты.</a></p>
-<p><a href="{% url 'category_list' %}">Категории.</a></p>
-<p><a href="{% url 'task_create' %}">Добавить задачу.</a></p>
+{% if status == 'actually' %}
+    <p><a href="{% url 'priority_list' %}">Приоритеты.</a></p>
+    <p><a href="{% url 'category_list' %}">Категории.</a></p>
+    <p><a href="{% url 'task_create' %}">Добавить задачу.</a></p>
+{% else %}
+    <p><a href="{% url 'deleted_priority_list' %}">Удаленные приоритеты.</a></p>
+    <p><a href="{% url 'deleted_category_list' %}">Удаленные категории.</a></p>
+{% endif %}
+
 <div>
     <form action="" method="get">
         {{ filter_form.as_p }}
@@ -38,7 +43,15 @@ Task list
         <p>Важность: {{ task.priority.name }}</p>
         <p>Статус: {{ task.get_status_display }}</p>
         <p>Срок выполнения: {{ task.completed }}</p>
+        {% if task.deleted_at is None %}
         <p><a href="delete/{{ task.id }}">Удалить</a></p>
+        {% else %}
+        <p>Удалено {{task.deleted_at}}</p>
+        {% if request.user.is_staff %}
+            <p>Удалено администратором: {{ category.deleted }}</p>
+        {% endif %}
+        <p><a href="{{task.id}}">Восстановить</a></p>
+        {% endif %}
     </div>
     <div>
 

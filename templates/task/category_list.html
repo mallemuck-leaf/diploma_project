@@ -6,11 +6,9 @@ Categories
 
 {% block header %}
 <h1>Категории задач</h1>
-<h3>Все ваши категории.</h3>
 {% endblock %}
 
 {% block content %}
-<p><a href="{% url 'task_list' %}">Вернуться</a> к списку задач.</p>
 {% for category in categories %}
 <div>
     <div>
@@ -24,8 +22,16 @@ Categories
         <p>{{ category.created_at }}</p>
         <p>Последнее изменение:</p>
         <p>{{ category.updated_at }}</p>
+        {% if category.deleted is None and category.deleted_at is None %}
         <p><a href="category/{{ category.id }}">Изменить</a></p>
         <p><a href="delete/{{ category.id }}">Удалить</a></p>
+        {% else %}
+        <p>Дата удаления: {{ category.deleted_at }}</p>
+        {% if request.user.is_staff %}
+        <p>Дата удаления администратором: {{ category.deleted }}</p>
+        {% endif %}
+        <p><a href="{{ category.id }}">Восстановить</a></p>
+        {% endif %}
     </div>
 
 </div>
