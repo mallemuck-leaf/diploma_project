@@ -4,18 +4,18 @@ from django.contrib.auth.models import User
 from task.models import Person, Priority, Category, Task, Status
 
 
-class MyDefCreateSerializer:
-    user = None
-
-    def create(self, validated_data):
-        print(validated_data)
-        validated_data.update(
-            {
-                'created_at': datetime.now(),
-                'created_by': Person.objects.get(user=validated_data.user)
-            }
-        )
-        return super().create(validated_data)
+# class MyDefCreateSerializer:
+#     user = None
+#
+#     def create(self, validated_data):
+#         print(validated_data)
+#         validated_data.update(
+#             {
+#                 'created_at': datetime.now(),
+#                 'created_by': Person.objects.get(user=validated_data.user)
+#             }
+#         )
+#         return super().create(validated_data)
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -61,11 +61,27 @@ class PersonAdminDetailSerializer(serializers.ModelSerializer):
         fields = ['user']
 
 
-class PrioritySerializer(MyDefCreateSerializer, serializers.ModelSerializer):
+class PrioritySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Priority
         fields = ['id', 'name']
+
+
+class PriorityPostSerializer(serializers.ModelSerializer):
+    created_at = serializers.DateTimeField(write_only=True)
+    updated_at = serializers.DateTimeField(write_only=True)
+    created_by = serializers.IntegerField(write_only=True)
+
+    class Meta:
+        model = Priority
+        fields = ['id', 'name']
+
+    def create(self, validated_data):
+        validated_data['created_at'] = datetime.now()
+        validated_data['updated_at'] = datetime.now()
+        validated_data['created_by'] = self.request.user
+        return super().create(validated_data)
 
 
 class PriorityForTaskSerializer(serializers.ModelSerializer):

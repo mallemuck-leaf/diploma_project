@@ -1,32 +1,56 @@
 from datetime import datetime
 from django.shortcuts import redirect
-from rest_framework.response import Response
 from task.models import Person
-from .serializers import (
-    PersonDetailSerializer, PersonListSerializer, PersonAdminListSerializer, PersonAdminDetailSerializer,
-    PrioritySerializer, PriorityAdminSerializer,
-    CategorySerializer, CategoryAdminSerializer,
-    TaskSerializer,
-)
-
-ACTIONS = ('create', 'retrieve', 'list')
 
 
-class AbstractMixin:
-    serializer_classes = None
-    actions = None
+class AbstractSerializerClassMixin:
+    admin_create_serializer = None
+    admin_retrieve_serializer = None
+    admin_list_serializer = None
+    admin_other_serializer = None
+    user_create_serializer = None
+    user_retrieve_serializer = None
+    user_list_serializer = None
+    user_other_serializer = None
+    serializer_classes = {
+        'admin': {
+            'create': admin_create_serializer,
+            'retrieve': admin_retrieve_serializer,
+            'list': admin_list_serializer,
+            'else': admin_other_serializer
+        },
+        'user': {
+            'create': user_create_serializer,
+            'retrieve': user_retrieve_serializer,
+            'list': user_list_serializer,
+            'else': user_other_serializer,
+        }
+    }
+    actions = ('create', 'retrieve', 'list')
 
     def get_serializer_class(self):
         if self.request.user.is_staff:
+            serializer_classes = {
+                    'create': self.admin_create_serializer,
+                    'retrieve': self.admin_retrieve_serializer,
+                    'list': self.admin_list_serializer,
+                    'else': self.admin_other_serializer
+            }
             if self.action in self.actions:
-                return self.serializer_classes['admin'][self.action]
+                return serializer_classes[self.action]
             else:
-                return self.serializer_classes['admin']['else']
+                return serializer_classes['else']
         else:
+            serializer_classes = {
+                'create': self.user_create_serializer,
+                'retrieve': self.user_retrieve_serializer,
+                'list': self.user_list_serializer,
+                'else': self.user_other_serializer,
+            }
             if self.action in self.actions:
-                return self.serializer_classes['user'][self.action]
+                return serializer_classes[self.action]
             else:
-                return self.serializer_classes['user']['else']
+                return serializer_classes['else']
 
 
 class AbstractQuerysetClassMixin:
@@ -76,62 +100,3 @@ class PersonQuerysetClassMixin:
         else:
             return Person.objects.filter(user=self.request.user)
 
-
-class SerializerPersonMixin(AbstractMixin):
-    serializer_classes = {
-        'admin': {
-            'create': PersonAdminDetailSerializer,
-            'retrieve': PersonAdminDetailSerializer,
-            'list': PersonAdminListSerializer,
-            'else': PersonAdminDetailSerializer
-        },
-        'user': {
-            'create': PersonDetailSerializer,
-            'retrieve': PersonDetailSerializer,
-            'list': PersonListSerializer,
-            'else': PersonDetailSerializer,
-        }
-    }
-    actions = ACTIONS
-
-
-class SerializerPriorityMixin(AbstractMixin):
-    serializer_classes = {
-        'admin': {
-            'else': PriorityAdminSerializer
-        },
-        'user': {
-            'else': PrioritySerializer
-        }
-    }
-    actions = ()
-
-
-class SerializerCategoryMixin(AbstractMixin):
-    serializer_classes = {
-        'admin': {
-            'else': CategoryAdminSerializer
-        },
-        'user': {
-            'else': CategorySerializer
-        }
-    }
-    actions = ()
-
-
-class SerializerTaskMixin(AbstractMixin):
-    serializer_classes = {
-        'admin': {
-            'create': PersonAdminDetailSerializer,
-            'retrieve': PersonAdminDetailSerializer,
-            'list': PersonAdminListSerializer,
-            'else': PersonAdminDetailSerializer
-        },
-        'user': {
-            'create': PersonDetailSerializer,
-            'retrieve': PersonDetailSerializer,
-            'list': PersonListSerializer,
-            'else': TaskSerializer
-        }
-    }
-    actions = ()
