@@ -10,7 +10,7 @@ from .permissions import IsAdminOrUserIDOnly
 from task.models import Person, Task, Priority, Category
 from .mixins import (
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin,
-    AbstractDestroyMixin, AbstractSerializerClassMixin,
+    AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin,
 )
 
 
@@ -31,6 +31,7 @@ class PersonViewSet(AbstractSerializerClassMixin,
 class PriorityViewSet(AbstractSerializerClassMixin,
                       AbstractQuerysetClassMixin,
                       AbstractDestroyMixin,
+                      AbstractCreateMixin,
                       ModelViewSet):
     admin_create_serializer = serializers.PriorityAdminSerializer
     admin_list_serializer = serializers.PriorityAdminSerializer
@@ -47,6 +48,7 @@ class PriorityViewSet(AbstractSerializerClassMixin,
 
 class CategoryViewSet(AbstractSerializerClassMixin,
                       AbstractQuerysetClassMixin,
+                      AbstractCreateMixin,
                       AbstractDestroyMixin,
                       ModelViewSet):
     admin_create_serializer = serializers.CategoryAdminSerializer
@@ -64,6 +66,7 @@ class CategoryViewSet(AbstractSerializerClassMixin,
 
 class TaskViewSet(AbstractSerializerClassMixin,
                   AbstractQuerysetClassMixin,
+                  # AbstractCreateMixin,
                   AbstractDestroyMixin,
                   ModelViewSet):
     admin_create_serializer = serializers.TaskSerializer

@@ -1,5 +1,7 @@
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework import status
+from rest_framework.response import Response
 from task.models import Person
 
 
@@ -12,20 +14,6 @@ class AbstractSerializerClassMixin:
     user_retrieve_serializer = None
     user_list_serializer = None
     user_other_serializer = None
-    serializer_classes = {
-        'admin': {
-            'create': admin_create_serializer,
-            'retrieve': admin_retrieve_serializer,
-            'list': admin_list_serializer,
-            'else': admin_other_serializer
-        },
-        'user': {
-            'create': user_create_serializer,
-            'retrieve': user_retrieve_serializer,
-            'list': user_list_serializer,
-            'else': user_other_serializer,
-        }
-    }
     actions = ('create', 'retrieve', 'list')
 
     def get_serializer_class(self):
@@ -81,15 +69,22 @@ class AbstractDestroyMixin:
         return redirect(f'{self.redirect_url}')
 
 
-# class AbstractCreateMixin:
-#
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer['created_at'] = datetime.now()
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_create(serializer)
-#         headers = self.get_success_headers(serializer.data)
-#         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+class AbstractCreateMixin:
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=Person.objects.get(user=self.request.user),
+                        created_at=datetime.now(),
+                        updated_at=datetime.now())
+
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer_class()
+    #     obj_user = Person.objects.get(user=request.user)
+    #     obj_data = serializer(request.data)
+    #     obj_data['created_by'] = obj_user
+    #     obj_data['created_at'] = datetime.now()
+    #     obj_data['updated_at'] = datetime.now()
+    #     obj_data.save()
+    #     return Response({'message': 'object created'}, status=status.HTTP_200_OK)
 
 
 class PersonQuerysetClassMixin:
