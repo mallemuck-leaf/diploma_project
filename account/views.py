@@ -94,7 +94,7 @@ def account_detail(request, pk):
     if request.method == 'POST':
         profile_obj = Profile.objects.get(id=pk)
         user = profile_obj.user
-        print(user)
+        # print(user)
         form = UserDetailForm(data=request.POST)
         if form.is_valid():
             new_info = form.save(commit=False)
@@ -106,12 +106,12 @@ def account_detail(request, pk):
                 user.is_active = True
             else:
                 user.is_active = False
-            print('adp', user, user.is_staff)
+            # print('adp', user, user.is_staff)
             user.save()
             return redirect(f'/account/profile_list/{pk}')
     if request.user.is_staff:
         profiles = Profile.objects.get(id=pk)
-        form = UserDetailForm(instance=profiles)
+        form = UserDetailForm(instance=profiles.user)
     else:
         profiles = ()
         form = UserDetailForm()

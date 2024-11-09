@@ -9,20 +9,21 @@ from . import serializers
 from .permissions import IsAdminOrUserIDOnly
 from task.models import Person, Task, Priority, Category
 from .mixins import (
-    AbstractQuerysetClassMixin, PersonQuerysetClassMixin,
+    AbstractQuerysetClassMixin, PersonQuerysetClassMixin, UserDestroyMixin,
     AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin, AbstractUpdateMixin
 )
 
 
 class PersonViewSet(AbstractSerializerClassMixin,
                     PersonQuerysetClassMixin,
+                    UserDestroyMixin,
                     ModelViewSet):
-    admin_create_serializer = serializers.PersonAdminDetailSerializer
-    admin_list_serializer = serializers.PersonListSerializer
-    admin_retrieve_serializer = serializers.PersonAdminDetailSerializer
+    admin_create_serializer = serializers.ProfileSerializer
+    admin_list_serializer = serializers.PersonSerializer
+    admin_retrieve_serializer = serializers.ProfileSerializer
     admin_other_serializer = serializers.PersonAdminDetailSerializer
-    user_create_serializer = serializers.PersonDetailSerializer
-    user_list_serializer = serializers.PersonListSerializer
+    user_create_serializer = serializers.ProfileSerializer
+    user_list_serializer = serializers.PersonSerializer
     user_retrieve_serializer = serializers.PersonDetailSerializer
     user_other_serializer = serializers.PersonDetailSerializer
     permission_classes = [IsAdminOrUserIDOnly]

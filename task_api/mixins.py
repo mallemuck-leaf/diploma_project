@@ -1,6 +1,9 @@
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework.response import Response
+from django.contrib.auth.models import User
 from task.models import Person
+from account.models import Profile
 
 
 class AbstractSerializerClassMixin:
@@ -67,8 +70,26 @@ class AbstractDestroyMixin:
         return redirect(f'{self.redirect_url}')
 
 
-class AbstractCreateMixin:
+class UserDestroyMixin:
+    def destroy(self, request, pk=None, *args, **kwargs):
+        if request.user.is_staff:
+            user = User.objects.get(id=pk)
+            user.is_active = False
+            user.save()
+            return Response(status=204)
+        else:
+            request.user.is_active = False
+            request.user.save()
+            return Response(status=204)
+        # print(request.keys())
+        # instance = self.get_object()
+        # deleting_obj = Profile.objects.filter(id=instance.id)
+        # deleting_user = deleting_obj.user
+        # deleting_user.is_active = False
+        # deleting_user.save()
 
+
+class AbstractCreateMixin:
     def perform_create(self, serializer):
         serializer.save(created_by=Person.objects.get(user=self.request.user),
                         created_at=datetime.now(),
@@ -83,7 +104,6 @@ class AbstractUpdateMixin:
 
 
 class PersonQuerysetClassMixin:
-
     def get_queryset(self):
         if self.request.user.is_staff:
             return Person.objects.all()

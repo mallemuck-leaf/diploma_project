@@ -2,6 +2,7 @@ from datetime import datetime
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from task.models import Person, Priority, Category, Task, Status
+from account.models import Profile
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
@@ -19,10 +20,36 @@ class UserDetailForAdminSerializer(UserDetailSerializer):
 class UserPartialDetailSerializer(UserDetailSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username']
+        fields = ['id', 'username', 'is_active']
 
 
-class PersonListSerializer(serializers.ModelSerializer):
+class UserCreateSerializer(UserDetailSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'password']
+        extra_kwargs = { 'password': {'write_only': True}}
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = UserPartialDetailSerializer(read_only=True)
+    new_user = UserCreateSerializer(write_only=True)
+
+    class Meta:
+        model = Profile
+        fields = '__all__'
+
+    def create(self, validated_data):
+        print(validated_data.keys())
+        user_data = validated_data.pop('new_user')
+        user_password = user_data.pop('password')
+        user = User(**user_data)
+        user.set_password(user_password)
+        user.save()
+        Profile.objects.create(user=user, **validated_data)
+        return user
+
+
+class PersonSerializer(serializers.ModelSerializer):
     user = UserPartialDetailSerializer()
 
     class Meta:
@@ -30,7 +57,7 @@ class PersonListSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class PersonAdminListSerializer(PersonListSerializer):
+class PersonAdminSerializer(PersonSerializer):
     user = UserPartialDetailSerializer()
 
     class Meta:
@@ -158,7 +185,6 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TaskAdminSerializer(TaskSerializer):
-    user = PersonAdminPartialDetailSerializer()
 
     class Meta:
         model = Task

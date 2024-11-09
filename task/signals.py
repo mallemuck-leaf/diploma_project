@@ -11,3 +11,4 @@ def create_user(sender, instance, created, **kwargs):
     if created:
         instance.person = Person.objects.create(user=instance)
         instance.person.save()
+        print('create profile')
