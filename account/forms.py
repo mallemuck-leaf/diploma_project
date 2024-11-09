@@ -40,4 +40,4 @@ class ProfileEditForm(forms.ModelForm):
 class UserDetailForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['is_active', 'is_staff', 'is_superuser']
+        fields = ['is_active', 'is_staff']

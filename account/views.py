@@ -90,14 +90,24 @@ def account_list(request):
 
 @login_required
 def account_detail(request, pk):
+    print('adg', request.user, request.user.is_staff)
     if request.method == 'POST':
         profile_obj = Profile.objects.get(id=pk)
+        user = profile_obj.user
+        print(user)
         form = UserDetailForm(data=request.POST)
         if form.is_valid():
             new_info = form.save(commit=False)
-            User.objects.filter(id=profile_obj.user.id).update(is_staff=new_info.is_staff,
-                                                               is_active=new_info.is_active,
-                                                               is_superuser=new_info.is_superuser,)
+            if new_info.is_staff:
+                user.is_staff = True
+            else:
+                user.is_staff = False
+            if new_info.is_active:
+                user.is_active = True
+            else:
+                user.is_active = False
+            print('adp', user, user.is_staff)
+            user.save()
             return redirect(f'/account/profile_list/{pk}')
     if request.user.is_staff:
         profiles = Profile.objects.get(id=pk)
