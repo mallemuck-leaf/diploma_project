@@ -10,7 +10,7 @@ from .permissions import IsAdminOrUserIDOnly
 from task.models import Person, Task, Priority, Category
 from .mixins import (
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin,
-    AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin,
+    AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin, AbstractUpdateMixin
 )
 
 
@@ -32,6 +32,7 @@ class PriorityViewSet(AbstractSerializerClassMixin,
                       AbstractQuerysetClassMixin,
                       AbstractDestroyMixin,
                       AbstractCreateMixin,
+                      AbstractUpdateMixin,
                       ModelViewSet):
     admin_create_serializer = serializers.PriorityAdminSerializer
     admin_list_serializer = serializers.PriorityAdminSerializer
@@ -49,6 +50,7 @@ class PriorityViewSet(AbstractSerializerClassMixin,
 class CategoryViewSet(AbstractSerializerClassMixin,
                       AbstractQuerysetClassMixin,
                       AbstractCreateMixin,
+                      AbstractUpdateMixin,
                       AbstractDestroyMixin,
                       ModelViewSet):
     admin_create_serializer = serializers.CategoryAdminSerializer
@@ -66,13 +68,13 @@ class CategoryViewSet(AbstractSerializerClassMixin,
 
 class TaskViewSet(AbstractSerializerClassMixin,
                   AbstractQuerysetClassMixin,
-                  # AbstractCreateMixin,
+                  AbstractCreateMixin,
                   AbstractDestroyMixin,
                   ModelViewSet):
-    admin_create_serializer = serializers.TaskSerializer
-    admin_list_serializer = serializers.TaskSerializer
-    admin_retrieve_serializer = serializers.TaskSerializer
-    admin_other_serializer = serializers.TaskSerializer
+    admin_create_serializer = serializers.TaskAdminSerializer
+    admin_list_serializer = serializers.TaskAdminSerializer
+    admin_retrieve_serializer = serializers.TaskAdminSerializer
+    admin_other_serializer = serializers.TaskAdminSerializer
     user_create_serializer = serializers.TaskSerializer
     user_list_serializer = serializers.TaskSerializer
     user_retrieve_serializer = serializers.TaskSerializer

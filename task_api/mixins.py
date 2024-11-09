@@ -1,7 +1,5 @@
 from datetime import datetime
 from django.shortcuts import redirect
-from rest_framework import status
-from rest_framework.response import Response
 from task.models import Person
 
 
@@ -76,15 +74,12 @@ class AbstractCreateMixin:
                         created_at=datetime.now(),
                         updated_at=datetime.now())
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer_class()
-    #     obj_user = Person.objects.get(user=request.user)
-    #     obj_data = serializer(request.data)
-    #     obj_data['created_by'] = obj_user
-    #     obj_data['created_at'] = datetime.now()
-    #     obj_data['updated_at'] = datetime.now()
-    #     obj_data.save()
-    #     return Response({'message': 'object created'}, status=status.HTTP_200_OK)
+
+class AbstractUpdateMixin:
+    def perform_update(self, serializer):
+        # instance = self.get_object()
+        if self.request.user.is_authenticated:
+            updated_instance = serializer.save(updated_at=datetime.now())
 
 
 class PersonQuerysetClassMixin:

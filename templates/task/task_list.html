@@ -43,14 +43,22 @@ Task list
         <p>Важность: {{ task.priority.name }}</p>
         <p>Статус: {{ task.get_status_display }}</p>
         <p>Срок выполнения: {{ task.completed }}</p>
-        {% if task.deleted_at is None %}
+        {% if task.deleted_at is None and task.deleted is None %}
         <p><a href="delete/{{ task.id }}">Удалить</a></p>
         {% else %}
-        <p>Удалено {{task.deleted_at}}</p>
-        {% if request.user.is_staff %}
-            <p>Удалено администратором: {{ category.deleted }}</p>
-        {% endif %}
-        <p><a href="{{task.id}}">Восстановить</a></p>
+            {% if request.user.is_staff %}
+                <p>Удалено пользователем: {{ task.deleted_at }}</p>
+                <p>Удалено администратором: {{ task.deleted }}</p>
+            {% else %}
+                {% if task.deleted is None %}
+                    <p>Удалено {{task.deleted_at}}</p>
+                {% else %}
+                    <p>Удалено администратором</p>
+                {% endif %}
+            {% endif %}
+            {% if task.deleted is None or request.user.is_staff %}
+                <p><a href="{{task.id}}">Восстановить</a></p>
+            {% endif %}
         {% endif %}
     </div>
     <div>
