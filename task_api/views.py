@@ -4,9 +4,9 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from . import serializers
-from .permissions import IsAdminOrUserIDOnly
+from .permissions import IsAuthenticatedOrCreateOnly
 from task.models import Person, Task, Priority, Category
 from .mixins import (
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin, UserDestroyMixin,
@@ -26,7 +26,7 @@ class PersonViewSet(AbstractSerializerClassMixin,
     user_list_serializer = serializers.PersonSerializer
     user_retrieve_serializer = serializers.PersonDetailSerializer
     user_other_serializer = serializers.PersonDetailSerializer
-    permission_classes = [IsAdminOrUserIDOnly]
+    permission_classes = [IsAuthenticatedOrCreateOnly]
 
 
 class PriorityViewSet(AbstractSerializerClassMixin,

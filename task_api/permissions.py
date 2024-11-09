@@ -14,3 +14,13 @@ class IsAdminOrUserIDOnly(BasePermission):
             return True
         # return obj.user == request.user
         return obj.user == request.user
+
+
+class IsAuthenticatedOrCreateOnly(BasePermission):
+
+    def has_permission(self, request, view):
+        if request.method in ('POST', 'GET'):
+            return True
+        if request.user.is_authenticated:
+            return True
+        return False

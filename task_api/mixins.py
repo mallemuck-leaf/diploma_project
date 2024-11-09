@@ -1,7 +1,8 @@
 from datetime import datetime
 from django.shortcuts import redirect
+from rest_framework import status
 from rest_framework.response import Response
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from task.models import Person
 from account.models import Profile
 
@@ -105,8 +106,12 @@ class AbstractUpdateMixin:
 
 class PersonQuerysetClassMixin:
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Person.objects.all()
+        # print(self.request.user)
+        if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                return Person.objects.all()
+            else:
+                return Person.objects.filter(user=self.request.user)
         else:
-            return Person.objects.filter(user=self.request.user)
+            return Person.objects.filter(id=0)
 
