@@ -1,10 +1,8 @@
 from datetime import datetime
 from django.shortcuts import redirect
-from rest_framework import status
 from rest_framework.response import Response
-from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.auth.models import User
 from task.models import Person
-from account.models import Profile
 
 
 class AbstractSerializerClassMixin:
@@ -72,6 +70,7 @@ class AbstractDestroyMixin:
 
 
 class UserDestroyMixin:
+
     def destroy(self, request, pk=None, *args, **kwargs):
         if request.user.is_staff:
             user = User.objects.get(id=pk)
@@ -82,15 +81,10 @@ class UserDestroyMixin:
             request.user.is_active = False
             request.user.save()
             return Response(status=204)
-        # print(request.keys())
-        # instance = self.get_object()
-        # deleting_obj = Profile.objects.filter(id=instance.id)
-        # deleting_user = deleting_obj.user
-        # deleting_user.is_active = False
-        # deleting_user.save()
 
 
 class AbstractCreateMixin:
+
     def perform_create(self, serializer):
         serializer.save(created_by=Person.objects.get(user=self.request.user),
                         created_at=datetime.now(),
@@ -98,6 +92,7 @@ class AbstractCreateMixin:
 
 
 class AbstractUpdateMixin:
+
     def perform_update(self, serializer):
         # instance = self.get_object()
         if self.request.user.is_authenticated:
@@ -105,6 +100,7 @@ class AbstractUpdateMixin:
 
 
 class PersonQuerysetClassMixin:
+
     def get_queryset(self):
         # print(self.request.user)
         if self.request.user.is_authenticated:
@@ -114,4 +110,3 @@ class PersonQuerysetClassMixin:
                 return Person.objects.filter(user=self.request.user)
         else:
             return Person.objects.filter(id=0)
-

@@ -1,0 +1,55 @@
+from datetime import datetime
+from rest_framework import serializers
+from task.models import Task, Status, Priority, Category
+from task_api.serializers.category_serializers import CategoryForTaskSerializer
+from task_api.serializers.priority_serializers import PriorityForTaskSerializer
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Status
+        fields = '__all__'
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    priority = PriorityForTaskSerializer(read_only=True)
+    priority_id = serializers.SlugRelatedField(write_only=True,
+                                               slug_field='id',
+                                               queryset=Priority.objects,
+                                               required=False)
+    category = CategoryForTaskSerializer(read_only=True)
+    category_id = serializers.SlugRelatedField(write_only=True,
+                                               slug_field='id',
+                                               queryset=Category.objects,
+                                               required=False)
+
+    class Meta:
+        model = Task
+        fields = ['id', 'title', 'description', 'category', 'priority', 'status', 'completed',
+                  'completed_at', 'created_at', 'updated_at', 'priority_id', 'category_id']
+
+    def create(self, validated_data):
+        priority_id = validated_data.pop('priority_id')
+        category_id = validated_data.pop('category_id')
+        task_object = Task.objects.create(**validated_data,
+                                          priority=priority_id,
+                                          category=category_id)
+        return task_object
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.description = validated_data.get('description', instance.description)
+        instance.status = validated_data.get('status', instance.status)
+        instance.completed = validated_data.get('completed', instance.completed)
+        instance.completed_at = validated_data.get('completed_at', instance.completed_at)
+        instance.updated = datetime.now()
+        instance.priority = validated_data.get('priority_id', instance.priority)
+        instance.category = validated_data.get('category_id', instance.category)
+        instance.save()
+        return instance
+
+
+class TaskAdminSerializer(TaskSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
