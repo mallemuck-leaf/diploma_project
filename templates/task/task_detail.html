@@ -27,6 +27,9 @@ Task detail
         </form>
     </div>
     <p>Срок выполнения: {{ task.completed }}</p>
+    {% if task.completed_at is not None %}
+    <p>Выполнено: {{ task.completed_at }}</p>
+    {% endif %}
     <p>Дата создания: {{ task.created_at }}</p>
     <p>Последнее обновление: {{ task.updated_at }}</p>
     <p><a href="/tasks/update/{{ task.id }}">Изменить</a></p>

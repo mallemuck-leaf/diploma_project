@@ -71,6 +71,14 @@ def task_detail(request, pk):
             new_task = form.save(commit=False)
             Task.objects.filter(id=pk).update(status=new_task.status,
                                               updated_at=datetime.now())
+            if new_task.status == 'c':
+                if task_obj.status != 'c':
+                    Task.objects.filter(id=pk).update(status=new_task.status,
+                                                      completed_at=datetime.now())
+            else:
+                if task_obj.status == 'c':
+                    Task.objects.filter(id=pk).update(status=new_task.status,
+                                                      completed_at=None)
             return redirect(f'/tasks/{pk}')
         else:
             messages.error(request, 'New task error.')
@@ -89,13 +97,22 @@ def task_update(request, pk):
         form = TaskUpdateForm(data=request.POST)
         if form.is_valid():
             new_task = form.save(commit=False)
+            # print(new_task)
             Task.objects.filter(id=pk).update(title=new_task.title,
                                               description=new_task.description,
                                               completed=new_task.completed,
                                               category=new_task.category,
                                               priority=new_task.priority,
-                                              status=new_task.status,
                                               updated_at=datetime.now())
+            # print('o', new_task['status'])
+            if new_task.status == 'c':
+                if task_obj.status != 'c':
+                    Task.objects.filter(id=pk).update(status=new_task.status,
+                                                      completed_at=datetime.now())
+            else:
+                if task_obj.status == 'c':
+                    Task.objects.filter(id=pk).update(status=new_task.status,
+                                                      completed_at=None)
             return redirect(f'/tasks/{pk}')
         else:
             messages.error(request, 'New task error.')
