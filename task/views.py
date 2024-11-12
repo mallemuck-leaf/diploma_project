@@ -162,9 +162,10 @@ def priority_update(request, pk):
             updated_priority = form.save(commit=False)
             Priority.objects.filter(id=pk).update(name=updated_priority.name, updated_at=datetime.now())
             return redirect('/tasks/priorities/')
-    form = PriorityForm()
+    priority_obj = Priority.objects.get(id=pk)
+    form = PriorityForm(instance=priority_obj)
     content = {
-        'priority': Priority.objects.get(id=pk),
+        'priority': priority_obj,
         'form': form,
     }
     return render(request, 'task/priority_update.html', content)
@@ -227,9 +228,10 @@ def category_update(request, pk):
                                                   description=updated_category.description,
                                                   updated_at=datetime.now())
             return redirect('/tasks/categories/')
-    form = CategoryForm()
+    category_obj = Category.objects.get(id=pk)
+    form = CategoryForm(instance=category_obj)
     content = {
-        'category': Category.objects.get(id=pk),
+        'category': category_obj,
         'form': form,
     }
     return render(request, 'task/category_update.html', content)
