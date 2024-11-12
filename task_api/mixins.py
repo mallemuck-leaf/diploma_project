@@ -96,7 +96,7 @@ class AbstractUpdateMixin:
     def perform_update(self, serializer):
         # instance = self.get_object()
         if self.request.user.is_authenticated:
-            updated_instance = serializer.save(updated_at=datetime.now())
+            serializer.save(updated_at=datetime.now())
 
 
 class PersonQuerysetClassMixin:
