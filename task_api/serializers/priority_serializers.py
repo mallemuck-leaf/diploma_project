@@ -9,6 +9,29 @@ class PrioritySerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class DeletedPrioritySerializer(PrioritySerializer):
+    class Meta:
+        model = Priority
+        fields = ['id', 'name', 'deleted_at']
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.deleted_at = None
+        instance.save()
+        return instance
+
+
+class AdminDeletedPrioritySerializer(DeletedPrioritySerializer):
+    class Meta:
+        model = Priority
+        fields = ['id', 'name', 'deleted_at', 'deleted']
+
+    def update(self, instance, validated_data):
+        instance.deleted = None
+        super().update(instance, validated_data)
+        return instance
+
+
 class PriorityPostSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(write_only=True)
     updated_at = serializers.DateTimeField(write_only=True)

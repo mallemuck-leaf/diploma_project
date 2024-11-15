@@ -8,7 +8,7 @@ router.register(r'categories', views.CategoryViewSet, basename='category')
 router.register(r'priorities', views.PriorityViewSet, basename='priority')
 router.register(r'tasks', views.TaskViewSet, basename='task')
 router.register(r'recovery/categories', views.CategoryViewSet, basename='recovery_category')
-router.register(r'recovery/priorities', views.PriorityViewSet, basename='recovery_priority')
+router.register(r'recovery/priorities', views.RecoveryPriorityViewSet, basename='recovery_priority')
 router.register(r'recovery/tasks', views.TaskViewSet, basename='recovery_task')
 
 urlpatterns = [

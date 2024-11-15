@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import render
@@ -12,7 +14,8 @@ from .permissions import IsAuthenticatedOrCreateOnly
 from task.models import Person, Task, Priority, Category
 from .mixins import (
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin, UserDestroyMixin,
-    AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin, AbstractUpdateMixin
+    AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin, AbstractUpdateMixin,
+    DeletedObjectsQuerysetClassMixin,
 )
 
 
@@ -85,3 +88,22 @@ class TaskViewSet(AbstractSerializerClassMixin,
     permission_classes = [IsAuthenticated]
     obj_model = Task
     redirect_url = '/api/v1/tasks/'
+
+
+class RecoveryPriorityViewSet(AbstractSerializerClassMixin,
+                              DeletedObjectsQuerysetClassMixin,
+                              ModelViewSet):
+    admin_create_serializer = priority_serializers.AdminDeletedPrioritySerializer
+    admin_list_serializer = priority_serializers.AdminDeletedPrioritySerializer
+    admin_retrieve_serializer = priority_serializers.AdminDeletedPrioritySerializer
+    admin_other_serializer = priority_serializers.AdminDeletedPrioritySerializer
+    user_create_serializer = priority_serializers.DeletedPrioritySerializer
+    user_list_serializer = priority_serializers.DeletedPrioritySerializer
+    user_retrieve_serializer = priority_serializers.DeletedPrioritySerializer
+    user_other_serializer = priority_serializers.DeletedPrioritySerializer
+    obj_model = Priority
+    permission_classes = [IsAuthenticated]
+
+    def perform_destroy(self, instance):
+        instance.deleted = datetime.now()
+        instance.save()

@@ -55,6 +55,17 @@ class AbstractQuerysetClassMixin:
                                                  deleted=None)
 
 
+class DeletedObjectsQuerysetClassMixin:
+    obj_model = None
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return self.obj_model.objects.all().exclude(deleted_at=None, deleted=None)
+        else:
+            person_user = Person.objects.get(user=self.request.user)
+            return self.obj_model.objects.filter(created_by=person_user, deleted=None).exclude(deleted_at=None)
+
+
 class AbstractDestroyMixin:
     obj_model = None
     redirect_url = None
