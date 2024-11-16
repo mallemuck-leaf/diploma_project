@@ -24,7 +24,7 @@ class DeletedPrioritySerializer(PrioritySerializer):
 class AdminDeletedPrioritySerializer(DeletedPrioritySerializer):
     class Meta:
         model = Priority
-        fields = ['id', 'name', 'deleted_at', 'deleted']
+        fields = ['id', 'created_by', 'name', 'deleted_at', 'deleted']
 
     def update(self, instance, validated_data):
         instance.deleted = None

@@ -121,3 +121,10 @@ class PersonQuerysetClassMixin:
                 return Person.objects.filter(user=self.request.user)
         else:
             return Person.objects.filter(id=0)
+
+
+class DeletedUserObjectsMixin:
+
+    def perform_destroy(self, instance):
+        instance.deleted = datetime.now()
+        instance.save()

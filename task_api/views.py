@@ -15,7 +15,7 @@ from task.models import Person, Task, Priority, Category
 from .mixins import (
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin, UserDestroyMixin,
     AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin, AbstractUpdateMixin,
-    DeletedObjectsQuerysetClassMixin,
+    DeletedObjectsQuerysetClassMixin, DeletedUserObjectsMixin,
 )
 
 
@@ -92,6 +92,7 @@ class TaskViewSet(AbstractSerializerClassMixin,
 
 class RecoveryPriorityViewSet(AbstractSerializerClassMixin,
                               DeletedObjectsQuerysetClassMixin,
+                              DeletedUserObjectsMixin,
                               ModelViewSet):
     admin_create_serializer = priority_serializers.AdminDeletedPrioritySerializer
     admin_list_serializer = priority_serializers.AdminDeletedPrioritySerializer
@@ -104,6 +105,35 @@ class RecoveryPriorityViewSet(AbstractSerializerClassMixin,
     obj_model = Priority
     permission_classes = [IsAuthenticated]
 
-    def perform_destroy(self, instance):
-        instance.deleted = datetime.now()
-        instance.save()
+
+class RecoveryCategoryViewSet(AbstractSerializerClassMixin,
+                              DeletedObjectsQuerysetClassMixin,
+                              DeletedUserObjectsMixin,
+                              ModelViewSet):
+    admin_create_serializer = category_serializers.DeletedCategoryAdminSerializer
+    admin_list_serializer = category_serializers.DeletedCategoryAdminSerializer
+    admin_retrieve_serializer = category_serializers.DeletedCategoryAdminSerializer
+    admin_other_serializer = category_serializers.DeletedCategoryAdminSerializer
+    user_create_serializer = category_serializers.DeletedCategorySerializer
+    user_list_serializer = category_serializers.DeletedCategorySerializer
+    user_retrieve_serializer = category_serializers.DeletedCategorySerializer
+    user_other_serializer = category_serializers.DeletedCategorySerializer
+    obj_model = Category
+    permission_classes = [IsAuthenticated]
+
+
+class RecoveryTaskViewSet(AbstractSerializerClassMixin,
+                          DeletedObjectsQuerysetClassMixin,
+                          DeletedUserObjectsMixin,
+                          ModelViewSet):
+    admin_create_serializer = task_serializers.DeletedTaskAdminSerializer
+    admin_list_serializer = task_serializers.DeletedTaskAdminSerializer
+    admin_retrieve_serializer = task_serializers.DeletedTaskAdminSerializer
+    admin_other_serializer = task_serializers.DeletedTaskSerializer
+    user_create_serializer = task_serializers.DeletedTaskAdminSerializer
+    user_list_serializer = task_serializers.DeletedTaskAdminSerializer
+    user_retrieve_serializer = task_serializers.DeletedTaskAdminSerializer
+    user_other_serializer = task_serializers.DeletedTaskAdminSerializer
+    permission_classes = [IsAuthenticated]
+    obj_model = Task
+

@@ -3,6 +3,7 @@ from rest_framework import serializers
 from task.models import Task, Status, Priority, Category
 from task_api.serializers.category_serializers import CategoryForTaskSerializer
 from task_api.serializers.priority_serializers import PriorityForTaskSerializer
+from task_api.serializers.person_serializers import PersonAdminPartialDetailSerializer
 
 
 class StatusSerializer(serializers.ModelSerializer):
@@ -49,7 +50,36 @@ class TaskSerializer(serializers.ModelSerializer):
         return instance
 
 
+class DeletedTaskSerializer(TaskSerializer):
+    class Meta:
+        model = Task
+        fields = ['id', 'title', 'description', 'category', 'priority', 'status', 'completed',
+                  'completed_at', 'created_at', 'updated_at', 'priority_id', 'category_id']
+
+    def update(self, instance, validated_data):
+        instance.deleted_at = None
+        instance.save()
+        super().update(instance, validated_data)
+        return instance
+
+
 class TaskAdminSerializer(TaskSerializer):
+    created_by = PersonAdminPartialDetailSerializer(read_only=True)
+
     class Meta:
         model = Task
         fields = '__all__'
+
+
+class DeletedTaskAdminSerializer(DeletedTaskSerializer):
+    created_by = PersonAdminPartialDetailSerializer(read_only=True)
+
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.deleted = None
+        instance.save()
+        super().update(instance, validated_data)
+        return instance
