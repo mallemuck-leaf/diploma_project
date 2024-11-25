@@ -6,4 +6,7 @@ class TaskConfig(AppConfig):
     name = 'task'
 
     def ready(self):
+        '''
+        Waiting created new User object
+        '''
         import task.signals

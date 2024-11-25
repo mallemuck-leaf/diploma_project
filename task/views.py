@@ -13,6 +13,15 @@ from .forms import (
 
 @login_required
 def task_list(request):
+    '''
+    All user task list for user, All tasks list for admin. Only not deleted.
+
+    filter_form - filtering tasks
+    sorted_form - sorting tasks
+    tasks - task objects for list
+    sort_items - parameters for sorting
+    status - parameter for template (not deleted tasks)
+    '''
     user = Person.objects.get(user=request.user)
     tasks = Task.objects.filter(deleted_at=None, deleted=None)
     filter_form = TaskStatusFilterForm(data=request.GET)
@@ -46,6 +55,9 @@ def task_list(request):
 
 @login_required
 def task_create(request):
+    '''
+    create task object
+    '''
     if request.method == 'POST':
         form = TaskCreateForm(data=request.POST)
         if form.is_valid():
@@ -64,6 +76,12 @@ def task_create(request):
 
 @login_required
 def task_detail(request, pk):
+    '''
+    task details page with updating status parameter.
+
+    if status = 'completed' - add 'completed_at'
+    if status != 'completed' - 'completed_at' is None.
+    '''
     task_obj = Task.objects.get(id=pk)
     if request.method == 'POST':
         form = TaskUpdateStatusForm(data=request.POST)
@@ -92,6 +110,9 @@ def task_detail(request, pk):
 
 @login_required
 def task_update(request, pk):
+    '''
+    task all details page for updating.
+    '''
     task_obj = Task.objects.get(id=pk)
     if request.method == 'POST':
         form = TaskUpdateForm(data=request.POST)
@@ -126,6 +147,11 @@ def task_update(request, pk):
 
 @login_required
 def task_delete(request, pk):
+    '''
+    Deleting tasks.
+    When deleting a note is made about the deletion.
+    The marked deleted objects are not displayed.
+    '''
     if request.method == 'POST':
         form = TaskDeleteForm(data=request.POST)
         if form.is_valid():
@@ -146,6 +172,11 @@ def task_delete(request, pk):
 
 @login_required
 def priority_list(request):
+    '''
+    User priority list, only not deleted.
+    All priorities for admin.
+    New priority creating.
+    '''
     if request.method == 'POST':
         form = PriorityForm(data=request.POST)
         if form.is_valid():
@@ -173,6 +204,9 @@ def priority_list(request):
 
 @login_required
 def priority_update(request, pk):
+    '''
+    Priority object updating.
+    '''
     if request.method == 'POST':
         form = PriorityForm(data=request.POST)
         if form.is_valid():
@@ -190,6 +224,11 @@ def priority_update(request, pk):
 
 @login_required
 def priority_delete(request, pk):
+    '''
+    Priority object deleting.
+    When deleting a note is made about the deletion.
+    After deleting - redirect to priority list.
+    '''
     if request.method == 'POST':
         form = PriorityDeleteForm(data=request.POST)
         if form.is_valid():
@@ -210,6 +249,11 @@ def priority_delete(request, pk):
 
 @login_required
 def category_list(request):
+    '''
+    User category list, only not deleted.
+    All categories for admin.
+    New category creating.
+    '''
     if request.method == 'POST':
         form = CategoryForm(data=request.POST)
         if form.is_valid():
@@ -237,6 +281,9 @@ def category_list(request):
 
 @login_required
 def category_update(request, pk):
+    '''
+    Category object updating.
+    '''
     if request.method == 'POST':
         form = CategoryForm(data=request.POST)
         if form.is_valid():
@@ -256,6 +303,11 @@ def category_update(request, pk):
 
 @login_required
 def category_delete(request, pk):
+    '''
+    Category object deleting.
+    When deleting a note is made about the deletion.
+    After deleting - redirect to priority list.
+    '''
     if request.method == 'POST':
         form = CategoryDeleteForm(data=request.POST)
         if form.is_valid():
@@ -275,6 +327,15 @@ def category_delete(request, pk):
 
 @login_required
 def deleted_task_list(request):
+    '''
+    Deleted task list.
+
+    Objects filter:
+    For user: deleted is None, deleted_at is not None
+    For admin: deleted is not None
+
+    status 'deleted' for template.
+    '''
     user = Person.objects.get(user=request.user)
     if request.user.is_staff:
         tasks = Task.objects.all().exclude(deleted_at=None, deleted=None)
@@ -311,6 +372,10 @@ def deleted_task_list(request):
 
 @login_required
 def deleted_task_recovery(request, pk):
+    '''
+    restoring deleted task.
+    after restore redirect to deleted task list
+    '''
     if request.method == 'POST':
         form = TaskDeleteForm(data=request.POST)
         if form.is_valid():
@@ -331,6 +396,13 @@ def deleted_task_recovery(request, pk):
 
 @login_required
 def deleted_priority_list(request):
+    '''
+    Deleted priority list.
+
+    Objects filter:
+    For user: deleted is None, deleted_at is not None
+    For admin: deleted is not None
+    '''
     user = Person.objects.get(user=request.user)
     if request.user.is_staff:
         content = {
@@ -345,6 +417,10 @@ def deleted_priority_list(request):
 
 @login_required
 def deleted_priority_recovery(request, pk):
+    '''
+    restoring deleted priority.
+    after restore redirect to deleted priority list
+    '''
     if request.method == 'POST':
         form = PriorityDeleteForm(data=request.POST)
         if form.is_valid():
@@ -365,6 +441,13 @@ def deleted_priority_recovery(request, pk):
 
 @login_required
 def deleted_category_list(request):
+    '''
+    Deleted category list.
+
+    Objects filter:
+    For user: deleted is None, deleted_at is not None
+    For admin: deleted is not None
+    '''
     user = Person.objects.get(user=request.user)
     if request.user.is_staff:
         content = {
@@ -379,6 +462,10 @@ def deleted_category_list(request):
 
 @login_required
 def deleted_category_recovery(request, pk):
+    '''
+    restoring deleted category.
+    after restore - redirect to deleted category list
+    '''
     if request.method == 'POST':
         form = CategoryDeleteForm(data=request.POST)
         if form.is_valid():

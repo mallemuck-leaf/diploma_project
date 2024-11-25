@@ -11,6 +11,9 @@ from .models import Profile
 
 
 class LoginUser(LoginView):
+    '''
+    Page for user login
+    '''
     form_class = AuthenticationForm
     template_name = 'registration/login.html'
 
@@ -38,11 +41,17 @@ def user_login(request):
 
 @login_required
 def dashboard(request):
+    '''
+    Start page
+    '''
     return render(request, 'account/dashboard.html', {'section': 'dashboard'})
 
 
 @login_required
 def edit(request):
+    '''
+    User data update page.
+    '''
     if request.method == 'POST':
         user_form = UserEditForm(instance=request.user,
                                  data=request.POST)
@@ -63,6 +72,9 @@ def edit(request):
 
 
 def register(request):
+    '''
+    User registration page
+    '''
     if request.method == 'POST':
         user_form = UserRegistrationForm(request.POST)
         if user_form.is_valid():
@@ -78,6 +90,9 @@ def register(request):
 
 @login_required
 def account_list(request):
+    '''
+    List of all users for admin
+    '''
     if request.user.is_staff:
         profiles = Profile.objects.all()
     else:
@@ -90,6 +105,10 @@ def account_list(request):
 
 @login_required
 def account_detail(request, pk):
+    '''
+    User data update page for admin.
+    updated parameters: is_staff, is_active.
+    '''
     print('adg', request.user, request.user.is_staff)
     if request.method == 'POST':
         profile_obj = Profile.objects.get(id=pk)

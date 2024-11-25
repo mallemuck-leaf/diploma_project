@@ -8,7 +8,10 @@ User = get_user_model()
 
 @receiver(post_save, sender=User)
 def create_user(sender, instance, created, **kwargs):
+    '''
+    Creating a Person object when creating an User object
+    '''
     if created:
         instance.person = Person.objects.create(user=instance)
         instance.person.save()
-        print('create profile')
+        # print('create profile')

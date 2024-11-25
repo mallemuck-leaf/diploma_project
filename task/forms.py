@@ -3,6 +3,7 @@ from .models import Task, Category, Priority, Status
 
 
 class TaskCreateForm(forms.ModelForm):
+
     class Meta:
         model = Task
         fields = ['title', 'description', 'completed', 'category', 'priority']

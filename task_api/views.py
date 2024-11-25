@@ -1,17 +1,16 @@
-from datetime import datetime
-
-from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
-from django.shortcuts import render
-from rest_framework.views import APIView
+# from datetime import datetime
+# from django.core.exceptions import ObjectDoesNotExist
+# from django.http import Http404
+# from django.shortcuts import render
+# from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.response import Response
+# from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from .serializers import (
     person_serializers, priority_serializers, category_serializers, task_serializers
 )
 from .permissions import IsAuthenticatedOrCreateOnly
-from task.models import Person, Task, Priority, Category
+from task.models import Task, Priority, Category
 from .mixins import (
     AbstractQuerysetClassMixin, PersonQuerysetClassMixin, UserDestroyMixin,
     AbstractDestroyMixin, AbstractSerializerClassMixin, AbstractCreateMixin, AbstractUpdateMixin,
@@ -136,4 +135,3 @@ class RecoveryTaskViewSet(AbstractSerializerClassMixin,
     user_other_serializer = task_serializers.DeletedTaskAdminSerializer
     permission_classes = [IsAuthenticated]
     obj_model = Task
-

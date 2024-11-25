@@ -13,5 +13,5 @@ router.register(r'recovery/tasks', views.RecoveryTaskViewSet, basename='recovery
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('', include('rest_framework.urls')),
+    path('', include('rest_framework.urls')),   # default login/logout in drf
 ]

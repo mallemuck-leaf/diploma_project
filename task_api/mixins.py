@@ -6,6 +6,9 @@ from task.models import Person
 
 
 class AbstractSerializerClassMixin:
+    '''
+    Class for selecting serializers for actions
+    '''
     admin_create_serializer = None
     admin_retrieve_serializer = None
     admin_list_serializer = None
@@ -42,6 +45,9 @@ class AbstractSerializerClassMixin:
 
 
 class AbstractQuerysetClassMixin:
+    '''
+    Class for selecting model objects for viewset.
+    '''
     obj_model = None
 
     def get_queryset(self):
@@ -56,6 +62,9 @@ class AbstractQuerysetClassMixin:
 
 
 class DeletedObjectsQuerysetClassMixin:
+    '''
+    Class for selecting deleting model objects for viewset.
+    '''
     obj_model = None
 
     def get_queryset(self):
@@ -67,6 +76,9 @@ class DeletedObjectsQuerysetClassMixin:
 
 
 class AbstractDestroyMixin:
+    '''
+    Marking deleting objects as deleted.
+    '''
     obj_model = None
     redirect_url = None
 
@@ -81,7 +93,9 @@ class AbstractDestroyMixin:
 
 
 class UserDestroyMixin:
-
+    '''
+    Marking deleting user as not active.
+    '''
     def destroy(self, request, pk=None, *args, **kwargs):
         if request.user.is_staff:
             user = User.objects.get(id=pk)
@@ -95,6 +109,9 @@ class UserDestroyMixin:
 
 
 class AbstractCreateMixin:
+    '''
+    Creating new object
+    '''
 
     def perform_create(self, serializer):
         serializer.save(created_by=Person.objects.get(user=self.request.user),
@@ -103,6 +120,9 @@ class AbstractCreateMixin:
 
 
 class AbstractUpdateMixin:
+    '''
+    adding a change datetime when updating object
+    '''
 
     def perform_update(self, serializer):
         # instance = self.get_object()
@@ -111,6 +131,11 @@ class AbstractUpdateMixin:
 
 
 class PersonQuerysetClassMixin:
+    '''
+    selecting person objects for user list
+    for user - only user object
+    for admin - all users
+    '''
 
     def get_queryset(self):
         # print(self.request.user)
@@ -124,6 +149,9 @@ class PersonQuerysetClassMixin:
 
 
 class DeletedUserObjectsMixin:
+    '''
+    Marking deleting objects ad deleted for user
+    '''
 
     def perform_destroy(self, instance):
         instance.deleted = datetime.now()
