@@ -33,13 +33,16 @@ class AdminDeletedPrioritySerializer(DeletedPrioritySerializer):
 
 
 class PriorityPostSerializer(serializers.ModelSerializer):
+    '''
+    Serializer for tests
+    '''
     created_at = serializers.DateTimeField(write_only=True)
-    updated_at = serializers.DateTimeField(write_only=True)
-    created_by = serializers.IntegerField(write_only=True)
+    # updated_at = serializers.DateTimeField(write_only=True)
+    # created_by = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Priority
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'updated_at', 'created_by', 'created_at']
 
 
 class PriorityForTaskSerializer(serializers.ModelSerializer):
