@@ -24,6 +24,14 @@ class PutUserPrioritiesTest(TestCase):
         self.priority_by_other = Priority.objects.create(name='priority_2',
                                                          created_by=self.other_user,
                                                          updated_at=datetime.now())
+        self.priority_deleted_by_user = Priority.objects.create(name='priority_3',
+                                                                created_by=self.user,
+                                                                deleted_at=datetime.now(),
+                                                                deleted=None)
+        self.priority_deleted_by_admin = Priority.objects.create(name='priority_4',
+                                                                 created_by=self.user,
+                                                                 deleted_at=None,
+                                                                 deleted=datetime.now())
         self.data = {'name': 'modified_priority'}
         self.url = f'/api/v1/priorities/{self.priority_for_put.pk}/'
         self.error_url = f'/api/v1/priorities/{self.priority_by_other.pk}/'
@@ -40,9 +48,25 @@ class PutUserPrioritiesTest(TestCase):
         self.assertEqual(serializer.data['created_by'], self.priority_for_put.created_by.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_user_put_deleted_by_user_priority(self):
+        '''
+        Not put priority for user (deleted by user)
+        '''
+        url = f'{self.url}{self.priority_deleted_by_user.pk}/'
+        response = self.client.put(url, data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_user_put_deleted_by_admin_priority(self):
+        '''
+        Not put priority for user (deleted by admin)
+        '''
+        url = f'{self.url}{self.priority_deleted_by_admin.pk}/'
+        response = self.client.put(url, data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_user_invalid_put_priorities(self):
         '''
-        Put priority for user (created by other user)
+        Not put priority for user (created by other user)
         '''
         response = self.client.put(self.error_url, data=self.data)
         priority = Priority.objects.get(pk=self.priority_by_other.pk)
@@ -70,9 +94,19 @@ class PutAdminPrioritiesTest(TestCase):
         self.obj_by_regular = Priority.objects.create(name='priority_by_admin',
                                                       created_by=self.user_regular,
                                                       updated_at=datetime.now())
+        self.priority_deleted_by_regular = Priority.objects.create(name='priority_3',
+                                                                created_by=self.user_regular,
+                                                                deleted_at=datetime.now(),
+                                                                deleted=None)
+        self.priority_deleted_by_admin = Priority.objects.create(name='priority_4',
+                                                                 created_by=self.user_regular,
+                                                                 deleted_at=None,
+                                                                 deleted=datetime.now())
         self.data = {'name': 'modified_priority'}
         self.url_obj_by_admin = f'/api/v1/priorities/{self.obj_by_admin.pk}/'
         self.url_obj_by_regular = f'/api/v1/priorities/{self.obj_by_regular.pk}/'
+        self.url_deleted_obj_by_admin = f'/api/v1/priorities/{self.priority_deleted_by_admin.pk}/'
+        self.url_deleted_obj_by_regular = f'/api/v1/priorities/{self.priority_deleted_by_regular.pk}/'
 
     def test_admin_put_priorities(self):
         '''
@@ -114,6 +148,22 @@ class PutAdminPrioritiesTest(TestCase):
         self.assertEqual(response.data['name'], serializer.data['name'])
         self.assertEqual(serializer.data['created_by'], old_object['created_by'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_put_deleted_by_user_priority(self):
+        '''
+        Not put priority for admin (deleted by user)
+        '''
+        url = f'{self.url_deleted_obj_by_regular}{self.priority_deleted_by_regular.pk}/'
+        response = self.client.put(url, data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_put_deleted_by_admin_priority(self):
+        '''
+        Not put priority for admin (deleted by admin)
+        '''
+        url = f'{self.url_deleted_obj_by_admin}{self.priority_deleted_by_admin.pk}/'
+        response = self.client.put(url, data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class PutAnonimousPrioritiesTest(TestCase):

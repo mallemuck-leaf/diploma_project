@@ -1,3 +1,4 @@
+from datetime import datetime
 from task.models import Priority, Person
 from task_api.serializers.priority_serializers import PrioritySerializer, PriorityAdminSerializer
 from django.test import TestCase
@@ -20,16 +21,23 @@ class GetPrioritiesTest(TestCase):
         self.url = '/api/v1/priorities/'
         self.user = Person.objects.first()
         self.user2 = Person.objects.get(user=user_2)
-        self.priority_1 = Priority.objects.create(name='priority_1', created_by=self.user)
-        self.priority_2 = Priority.objects.create(name='priority_2', created_by=self.user)
-        self.priority_3 = Priority.objects.create(name='priority_3', created_by=self.user2)
+        self.priority_1 = Priority.objects.create(name='priority_1', created_by=self.user,
+                                                  deleted_at=None, deleted=None)
+        self.priority_2 = Priority.objects.create(name='priority_2', created_by=self.user,
+                                                  deleted_at=None, deleted=None)
+        self.priority_3 = Priority.objects.create(name='priority_3', created_by=self.user2,
+                                                  deleted_at=None, deleted=None)
+        self.priority_4 = Priority.objects.create(name='priority_3', created_by=self.user,
+                                                  deleted_at=datetime.now(), deleted=None)
+        self.priority_5 = Priority.objects.create(name='priority_3', created_by=self.user,
+                                                  deleted_at=None, deleted=datetime.now())
 
     def test_get_all_priorities(self):
         '''
-        Get all priorities for user (created by user)
+        Get all not deleted priorities for user (created by user)
         '''
         response = self.client.get(self.url)
-        priorities = Priority.objects.all().filter(created_by=self.user)
+        priorities = Priority.objects.all().filter(created_by=self.user, deleted_at=None, deleted=None)
         serializer = PrioritySerializer(priorities, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -45,9 +53,25 @@ class GetPrioritiesTest(TestCase):
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_get_valid_single_deleted_by_user_priority(self):
+        '''
+        Not get single priority while created by user and deleted by user
+        '''
+        get_url = f'{self.url}{self.priority_4.pk}/'
+        response = self.client.get(get_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_get_valid_single_deleted_by_admin_priority(self):
+        '''
+        Not get single priority while created by user and deleted by admin
+        '''
+        get_url = f'{self.url}{self.priority_5.pk}/'
+        response = self.client.get(get_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_get_valid_single_not_user_priority(self):
         '''
-        Get single priority while created by not user
+        Not get single priority while created by not user
         '''
         get_url = f'{self.url}{self.priority_3.pk}/'
         response = self.client.get(get_url)
@@ -59,7 +83,7 @@ class GetPrioritiesTest(TestCase):
 
     def test_get_invalid_single_priority(self):
         '''
-        Get single priority with invalid pk
+        Not get single priority with invalid pk
         '''
         get_url = f'{self.url}100/'
         response = self.client.get(get_url)
@@ -80,23 +104,30 @@ class GetAdminPrioritiesTest(TestCase):
         self.url = '/api/v1/priorities/'
         self.user = Person.objects.first()
         self.user2 = Person.objects.get(user=user_2)
-        self.priority_1 = Priority.objects.create(name='priority_1', created_by=self.user)
-        self.priority_2 = Priority.objects.create(name='priority_2', created_by=self.user)
-        self.priority_3 = Priority.objects.create(name='priority_3', created_by=self.user)
+        self.priority_1 = Priority.objects.create(name='priority_1', created_by=self.user,
+                                                  deleted_at=None, deleted=None)
+        self.priority_2 = Priority.objects.create(name='priority_2', created_by=self.user,
+                                                  deleted_at=None, deleted=None)
+        self.priority_3 = Priority.objects.create(name='priority_3', created_by=self.user,
+                                                  deleted_at=None, deleted=None)
+        self.priority_4 = Priority.objects.create(name='priority_4', created_by=self.user,
+                                                  deleted_at=datetime.now(), deleted=None)
+        self.priority_5 = Priority.objects.create(name='priority_5', created_by=self.user,
+                                                  deleted_at=None, deleted=datetime.now())
 
     def test_admin_get_all_priorities(self):
         '''
-        Get all priorities for admin (created by users)
+        Get all not deleted priorities for admin (created by users)
         '''
         response = self.client.get(self.url)
-        priorities = Priority.objects.all()
+        priorities = Priority.objects.all().filter(deleted_at=None, deleted=None)
         serializer = PriorityAdminSerializer(priorities, many=True)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_admin_get_valid_single_priority(self):
         '''
-        Get single priority for admin
+        Get single not deleted priority for admin
         '''
         get_url = f'{self.url}{self.priority_3.pk}/'
         response = self.client.get(get_url)
@@ -104,4 +135,28 @@ class GetAdminPrioritiesTest(TestCase):
         serializer = PriorityAdminSerializer(priority)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_get_valid_single_deleted_by_user_priority(self):
+        '''
+        Not get single priority while deleted by user
+        '''
+        get_url = f'{self.url}{self.priority_4.pk}/'
+        response = self.client.get(get_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_get_valid_single_deleted_by_admin_priority(self):
+        '''
+        Not get single priority while deleted by admin
+        '''
+        get_url = f'{self.url}{self.priority_5.pk}/'
+        response = self.client.get(get_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_admin_get_invalid_single_priority(self):
+        '''
+        Not get single priority with invalid pk
+        '''
+        get_url = f'{self.url}100/'
+        response = self.client.get(get_url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
