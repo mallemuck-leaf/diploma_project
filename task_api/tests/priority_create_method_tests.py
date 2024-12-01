@@ -1,8 +1,8 @@
 from task.models import Priority, Person
-from task_api.serializers.priority_serializers import PrioritySerializer, PriorityAdminSerializer
+from task_api.serializers.priority_serializers import PriorityAdminSerializer
 from django.test import TestCase
 from django.contrib.auth.models import User
-from rest_framework.test import APIClient, APITestCase
+from rest_framework.test import APIClient
 from rest_framework import status
 
 
