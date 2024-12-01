@@ -116,31 +116,26 @@ class PutAdminPrioritiesTest(TestCase):
         self.assertEqual(response.data['name'], serializer.data['name'])
         self.assertEqual(serializer.data['created_by'], old_object['created_by'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-#
-#     def test_admin_invalid_create_priorities(self):
-#         '''
-#         Invalid create priority by user
-#         Not data
-#         '''
-#         response = self.client.post(self.url)
-#         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-#
-#
-# class PutAnonimousPrioritiesTest(TestCase):
-#     def setUp(self):
-#         '''
-#         Create users and data for tests.
-#         Not authenticated!
-#         '''
-#         User.objects.create_user(username='testuser', password='pass123word')
-#         self.client = APIClient()
-#         self.url = '/api/v1/priorities/'
-#         self.data = {'name': 'priority_1'}
-#
-#     def test_anonimous_create_priorities(self):
-#         '''
-#         Create priority (created by anonimous user) is blocked
-#         access must be blocked (status 403 forbidden)
-#         '''
-#         response = self.client.post(self.url, self.data)
-#         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class PutAnonimousPrioritiesTest(TestCase):
+    def setUp(self):
+        '''
+        Create users and data for tests.
+        Not authenticated!
+        '''
+        user = User.objects.create_user(username='testuser', password='pass123word')
+        self.client = APIClient()
+        self.user = Person.objects.get(user=user)
+        self.object = Priority.objects.create(name='priority_1',
+                                              created_by=self.user)
+        self.url = f'/api/v1/priorities/{self.object.pk}/'
+        self.data = {'name': 'modified_priority'}
+
+    def test_anonimous_put_priorities(self):
+        '''
+        Put priority (created by users) is blocked
+        access must be blocked (status 403 forbidden)
+        '''
+        response = self.client.post(self.url, self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
