@@ -88,6 +88,12 @@ class TaskViewSet(AbstractSerializerClassMixin,
     obj_model = Task
     redirect_url = '/api/v1/tasks/'
 
+    def get_serializer_context(self):
+        '''
+        Method for serializers (queryset filters)
+        '''
+        return {'request': self.request}
+
 
 class RecoveryPriorityViewSet(AbstractSerializerClassMixin,
                               DeletedObjectsQuerysetClassMixin,
